@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Portfolio</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+      /* ── SMOOTH TRANSITIONS ── */
+      *, body, html { transition: background-color 0.3s, border-color 0.3s, color 0.3s; }
+
+      /* ── PAGE BACKGROUND ── */
+      body { background-color: #f3f4f6; }
+      body.dark { background-color: #0a0a0a !important; }
+
+      /* ══════════════════════════════════════════
+         DARK MODE — surgical, no cascade conflicts
+         ══════════════════════════════════════════ */
+
+      /* Card background */
+      [data-dark="true"] { background-color: #111111 !important; }
+
+      /* ── TEXT: make everything white by default ── */
+      [data-dark="true"] h1,
+      [data-dark="true"] h2,
+      [data-dark="true"] h3 { color: #ffffff !important; }
+
+      /* paragraphs & spans that use text-black */
+      [data-dark="true"] p.text-black,
+      [data-dark="true"] p[class*="text-black"],
+      [data-dark="true"] span.text-black,
+      [data-dark="true"] span[class*="text-black"]:not([class*="text-black/"]),
+      [data-dark="true"] label.text-black { color: #ffffff !important; }
+
+      /* muted text */
+      [data-dark="true"] *[class*="text-black/"],
+      [data-dark="true"] *[class*="text-black\/"] { color: rgba(255,255,255,0.4) !important; }
+
+      /* anchor text */
+      [data-dark="true"] a span.text-black,
+      [data-dark="true"] a[class*="text-black"] { color: #ffffff !important; }
+
+      /* ── BORDERS ── */
+      [data-dark="true"] *[class*="border-black"] { border-color: rgba(255,255,255,0.18) !important; }
+      [data-dark="true"] *[class*="border-black/"] { border-color: rgba(255,255,255,0.1) !important; }
+
+      /* ── DIVIDER LINES & SUBTLE BGs ── */
+      [data-dark="true"] *[class*="bg-black/10"]  { background-color: rgba(255,255,255,0.08) !important; }
+      [data-dark="true"] *[class*="bg-black/5"]   { background-color: rgba(255,255,255,0.05) !important; }
+      [data-dark="true"] *[class*="bg-black"][class*="0.03"] { background-color: rgba(255,255,255,0.04) !important; }
+
+      /* ── SECTION BOXES ── */
+      [data-dark="true"] div[class*="rounded-xl"][class*="border"] {
+        background-color: #1a1a1a !important;
+      }
+
+      /* ── SOLID BLACK ELEMENTS → white bg, black text ── */
+      [data-dark="true"] button.bg-black,
+      [data-dark="true"] div.bg-black,
+      [data-dark="true"] span.bg-black { background-color: #ffffff !important; }
+
+      [data-dark="true"] button.bg-black *,
+      [data-dark="true"] button.bg-black svg,
+      [data-dark="true"] div.bg-black *,
+      [data-dark="true"] div.bg-black svg { color: #000000 !important; fill: #000000 !important; }
+
+      /* Chat header text always white — handled inline */
+
+      /* ── PILL TAGS (span with rounded-full border) ── */
+      [data-dark="true"] span[class*="rounded-full"] {
+        border-color: rgba(255,255,255,0.25) !important;
+        color: #ffffff !important;
+        background-color: transparent !important;
+      }
+
+      /* ── PROJECT PILLS (outlined pill buttons) — handled inline in React, no override needed ── */
+
+      /* ── DOWNLOAD CV / SEND EMAIL BUTTONS ── */
+      /* These use bg-black and border-black classes */
+      [data-dark="true"] button[class*="bg-black"] { background-color: #ffffff !important; }
+      [data-dark="true"] button[class*="bg-black"] span,
+      [data-dark="true"] button[class*="bg-black"] svg { color: #000000 !important; fill: #000000 !important; }
+
+      [data-dark="true"] a[class*="border-black"][class*="text-black"] {
+        border-color: rgba(255,255,255,0.4) !important;
+        color: #ffffff !important;
+        background-color: transparent !important;
+      }
+
+      /* ── ICON BOXES ── */
+      [data-dark="true"] div[class*="bg-black"][class*="0.03"] {
+        background-color: rgba(255,255,255,0.06) !important;
+      }
+      [data-dark="true"] div[class*="bg-black"][class*="0.03"] svg { fill: #ffffff !important; }
+
+      /* ── WHITE BACKGROUNDS (gallery arrows, etc) ── */
+      [data-dark="true"] button[class*="bg-white"] {
+        background-color: #1e1e1e !important;
+        color: #ffffff !important;
+        border-color: rgba(255,255,255,0.12) !important;
+      }
+
+      /* ── CHAT "Chat with Ron" BUTTON ── */
+      [data-dark="true"] button.chat-trigger {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+      }
+      [data-dark="true"] button.chat-trigger svg,
+      [data-dark="true"] button.chat-trigger span { color: #000000 !important; fill: #000000 !important; }
+
+      /* ── INPUT FIELDS ── */
+      [data-dark="true"] input {
+        background-color: rgba(255,255,255,0.06) !important;
+        border-color: rgba(255,255,255,0.12) !important;
+        color: #ffffff !important;
+      }
+      [data-dark="true"] input::placeholder { color: rgba(255,255,255,0.3) !important; }
+
+      /* ── HOVER STATES ── */
+      [data-dark="true"] a[class*="group"]:hover span { color: #ffffff !important; }
+
+      /* ── GITHUB STATS IMAGES ── */
+      [data-dark="true"] img[src*="github"] { filter: invert(1) brightness(0.9); }
+
+      /* ── GALLERY ARROWS ── */
+      [data-dark="true"] .gallery-btn {
+        background-color: #1e1e1e !important;
+        border-color: rgba(255,255,255,0.12) !important;
+        color: #ffffff !important;
+      }
+      [data-dark="true"] .gallery-btn svg { fill: #ffffff !important; }
+
+      /* ── FOOTER TEXT ── */
+      [data-dark="true"] p.text-xs.text-black { color: rgba(255,255,255,0.4) !important; }
+    </style>
+  </head>
+
+  <body class="bg-gray-100 min-h-screen flex items-center justify-center" id="page-body">
+    <div id="root"></div>
+
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="./js/projects.js"></script>
+    <script src="./js/cv.js"></script>
+
+    <script type="text/babel">
+      function App() {
+        const [activeProject, setActiveProject] = React.useState(null);
+        const [galleryOpen, setGalleryOpen] = React.useState(false);
+        const [galleryIndex, setGalleryIndex] = React.useState(0);
+        const [chatOpen, setChatOpen] = React.useState(false);
+        const [chatMessages, setChatMessages] = React.useState([
+            { role: "assistant", content: "Hi! 👋 I'm Ron's chatbot! You can ask me about his name, age, birthday, favorite food, career goals, internship, and more!" }
+        ]);
+        const [chatInput, setChatInput] = React.useState("");
+        const [chatLoading, setChatLoading] = React.useState(false);
+        const [darkMode, setDarkMode] = React.useState(() => localStorage.getItem("darkMode") === "true");
+
+        const getRonReply = (text) => {
+            const q = text.toLowerCase();
+
+            // Helper: check if query contains any of the keywords
+            const has = (...words) => words.some(w => q.includes(w));
+
+            // NAME
+            if (has("name", "who are you", "who is ron", "call you", "your name", "introduce"))
+                return "Hi! My name is Ron Louie Magsipoc. Nice to meet you! 😊";
+
+            // AGE
+            if (has("age", "how old", "years old", "old are you"))
+                return "I'm 20 years old! 🎂";
+
+            // BIRTHDAY
+            if (has("birthday", "birth", "born", "bday", "birthdate", "date of birth"))
+                return "My birthday is September 18, 2025! 🎉";
+
+            // FAVORITE FOOD
+            if (has("food", "eat", "favorite food", "fave food", "munggo", "hungry", "dish", "meal"))
+                return "My favorite food is Munggo! 🥘 Simple but super delicious!";
+
+            // LOVE / PARTNER
+            if (has("love", "girlfriend", "partner", "crush", "relationship", "special", "venice", "garna", "girl"))
+                return "My love is Venice Angel Garna ❤️ She's very special to me!";
+
+            // CAREER GOALS
+            if (has("career", "goal", "dream", "ambition", "want to be", "future", "aspire", "plan", "achieve", "job", "work"))
+                return "What I want to achieve in my career is to become a System Administrator and get into Web Development! 💻🖥️";
+
+            // INTERNSHIP
+            if (has("internship", "intern", "ojt", "on the job", "open for", "available", "hiring", "apply"))
+                return "Yes! I am open for internship! 🙌 I would love the opportunity to gain hands-on experience!";
+
+            // LOCATION
+            if (has("location", "where", "live", "from", "place", "address", "city", "province"))
+                return "I'm from Binangonan, Rizal! 📍 (near Angono)";
+
+            // COURSE / SCHOOL
+            if (has("course", "school", "college", "study", "student", "university", "education", "degree"))
+                return "I'm an Information Technology student at East System Colleges of Rizal (2023 - Present)! 🎓";
+
+            // SKILLS / TECH
+            if (has("skill", "tech", "stack", "language", "framework", "tools", "know", "code", "programming", "react", "html", "css", "javascript", "php", "python", "mysql"))
+                return "My tech stack includes HTML5, CSS3, JavaScript, Tailwind CSS, React.js, PHP, Python, MySQL, REST API, Git, GitHub, XAMPP, Figma, VB.NET, and VS Code! 🛠️";
+
+            // PROJECTS
+            if (has("project", "built", "made", "created", "portfolio", "work", "app", "website", "technilog", "lashopper", "padyak", "shipboxgo", "calstone"))
+                return "I've worked on projects like Technilog (smart security e-commerce), LaShopper (Shopee-inspired), ShipBoxGo! (VB.NET shipping system), Calstone Light O (fan site), and Padyak (bike shop frontend)! 🚀";
+
+            // CERTIFICATIONS
+            if (has("cert", "certification", "certificate", "tesda", "award", "achievement", "training"))
+                return "I have certifications in Claude 101 (Anthropic), Setting Up Computer Networks (TESDA), and Maintaining Computer Systems and Networks (TESDA)! 📜";
+
+            // HOBBIES
+            if (has("hobby", "hobbies", "interest", "free time", "fun", "game", "gaming", "manga", "reading", "self study", "hardware", "assembl"))
+                return "My hobbies include Gaming 🎮, Coding 💻, Reading Manga 📚, Self Studying, and Hardware Assembling 🖥️!";
+
+            // GITHUB
+            if (has("github", "git", "repo", "repository", "profile", "link"))
+                return "You can check my GitHub here: https://github.com/ronmalakasmagyearn018 🔗";
+
+            // GREETINGS
+            if (has("hi", "hello", "hey", "good morning", "good afternoon", "good evening", "sup", "yo", "kumusta", "kamusta"))
+                return "Hi there! 👋 I'm Ron's assistant! Feel free to ask me anything about Ron Louie Magsipoc!";
+
+            // THANK YOU
+            if (has("thank", "thanks", "ty", "salamat"))
+                return "You're welcome! 😊 Feel free to ask anything else about Ron!";
+
+            // DEFAULT — unrelated
+            return "Oops! Something went wrong 😅 I can only answer questions about Ron Louie Magsipoc. Try asking about his name, age, birthday, skills, career goals, or internship!";
+        };
+
+        const sendMessage = () => {
+            const text = chatInput.trim();
+            if (!text || chatLoading) return;
+            const userMsg = { role: "user", content: text };
+            setChatMessages(prev => [...prev, userMsg]);
+            setChatInput("");
+            setChatLoading(true);
+            setTimeout(() => {
+                const reply = getRonReply(text);
+                setChatMessages(prev => [...prev, { role: "assistant", content: reply }]);
+                setChatLoading(false);
+            }, 600);
+        };
+
+        React.useEffect(() => {
+            const box = document.getElementById("chat-messages");
+            if (box) box.scrollTop = box.scrollHeight;
+        }, [chatMessages, chatLoading]);
+
+        React.useEffect(() => {
+            const body = document.getElementById("page-body");
+            if (body) {
+                if (darkMode) {
+                    body.style.backgroundColor = "#0a0a0a";
+                } else {
+                    body.style.backgroundColor = "";
+                }
+            }
+            localStorage.setItem("darkMode", darkMode);
+        }, [darkMode]);
+
+        return (
+        <div className={`w-[90vw] md:w-[80vw] min-h-[90vh] rounded-2xl border shadow-[0_4px_40px_rgba(0,0,0,0.08)] p-6 md:p-8 overflow-y-auto transition-colors duration-300 ${darkMode ? "bg-[#111111] border-white/10" : "bg-white border-black/10"}`} data-dark={darkMode ? "true" : "false"}>
+
+            {/* TOP ROW — stacks on mobile, row on desktop */}
+            <div className="flex flex-col md:flex-row md:flex-wrap md:items-start gap-6">
+
+                {/* MOBILE: image LEFT + info RIGHT (side by side), desktop: dissolved via md:contents */}
+                <div className="flex flex-row items-start gap-4 md:contents">
+
+                    {/* IMAGE */}
+                    <div className="relative w-24 h-24 md:w-40 md:h-40 shrink-0">
+                        <div className="w-full h-full rounded border border-black/10 overflow-hidden">
+                            <img src="../images/ron_portfolio.jpg" alt="Profile Picture" className="w-full h-full object-cover" />
+                        </div>
+                        {/* DARK MODE TOGGLE */}
+                        <button
+                            onClick={() => setDarkMode(d => !d)}
+                            title={darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+                            style={{
+                                position: "absolute", top: "6px", left: "6px",
+                                width: "22px", height: "22px",
+                                borderRadius: "50%",
+                                display: "flex", alignItems: "center", justifyContent: "center",
+                                background: darkMode ? "#ffffff" : "#000000",
+                                border: "none", cursor: "pointer",
+                                boxShadow: "0 1px 4px rgba(0,0,0,0.3)",
+                                zIndex: 10, padding: 0, transition: "background 0.3s"
+                            }}
+                        >
+                            {darkMode ? (
+                                /* Sun icon */
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="#000000">
+                                    <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-12.37l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0zM7.05 18.36l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0z"/>
+                                </svg>
+                            ) : (
+                                /* Moon icon */
+                                <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="#ffffff">
+                                    <path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>
+                                </svg>
+                            )}
+                        </button>
+                    </div>
+
+                    {/* NAME, LOCATION, TYPING, BUTTONS */}
+                    <div className="flex-1 min-w-0 md:pt-5 md:min-w-[200px]">
+                        <h1 style={{color: darkMode ? "#ffffff" : "#000000"}} className="text-xl md:text-3xl font-bold">Ron Louie Magsipoc</h1>
+
+                        <p style={{color: darkMode ? "#ffffff" : "#000000"}} className="flex items-center gap-1 text-sm mt-1 font-bold">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                            </svg>
+                            Binangonan, Rizal
+                        </p>
+
+                        <p style={{color: darkMode ? "#ffffff" : "#000000"}} className="text-sm mt-2 font-bold">
+                            <span id="typing-text"></span>
+                            <span className="animate-pulse">|</span>
+                        </p>
+
+                        {/* BUTTONS — stacked full-width on mobile, side by side on desktop */}
+                        <div className="flex flex-col gap-2 mt-4 md:flex-row md:gap-3">
+                            <button
+                                onClick={() => downloadCV()}
+                                style={{ backgroundColor: darkMode ? "#ffffff" : "#000000", color: darkMode ? "#000000" : "#ffffff" }}
+                                className="flex items-center justify-center gap-2 w-full md:w-auto px-4 py-2 text-sm rounded hover:opacity-80 transition-opacity cursor-pointer"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 16l-5-5h3V4h4v7h3l-5 5zm-7 2h14v2H5v-2z"/>
+                                </svg>
+                                Download CV
+                            </button>
+
+                            <a href="https://mail.google.com/mail/?view=cm&to=ronlouiemagsipoc1@gmail.com" target="_blank" rel="noopener noreferrer"
+                                style={{ borderColor: darkMode ? "rgba(255,255,255,0.4)" : "#000000", color: darkMode ? "#ffffff" : "#000000" }}
+                                className="flex items-center justify-center gap-2 w-full md:w-auto px-4 py-2 border text-sm rounded hover:opacity-80 transition-all cursor-pointer"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
+                                </svg>
+                                Send Email
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+
+                {/* EDUCATION — full width below on mobile, right side on desktop */}
+                <div className="border border-black/10 rounded-xl p-4 w-full md:w-[500px] md:ml-auto min-h-40 flex flex-col">
+                    <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-bold text-black">Education</span>
+                        <a href="../education.html" className="text-xs text-black/40 cursor-pointer hover:text-black transition-colors relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-black after:transition-all after:duration-300 hover:after:w-full">View All</a>
+                    </div>
+
+                    {/* LEFT | RIGHT TIMELINE */}
+                    <div className="flex flex-1">
+
+                        {/* LEFT SIDE */}
+                        <div className="flex flex-col justify-between flex-1 items-end pr-3">
+                            <div className="text-right">
+                                <p className="text-[9px] text-black uppercase tracking-wider">Elementary</p>
+                                <p className="text-[10px] font-medium text-black">Don Jose Ynares Sr. Memorial Elementary School</p>
+                                <p className="text-[9px] text-black">2011 - 2017</p>
+                            </div>
+                            <div className="text-right">
+                                <p className="text-[9px] text-black uppercase tracking-wider">Senior High</p>
+                                <p className="text-[10px] font-medium text-black">Angono National High School</p>
+                                <p className="text-[9px] text-black">2021 - 2023</p>
+                            </div>
+                        </div>
+
+                        {/* CENTER VERTICAL LINE */}
+                        <div className="w-px bg-black self-stretch" />
+
+                        {/* RIGHT SIDE */}
+                        <div className="flex flex-col justify-between flex-1 items-start pl-3">
+                            <div>
+                                <p className="text-[9px] text-black uppercase tracking-wider">Junior High</p>
+                                <p className="text-[10px] font-medium text-black">Don Jose Ynares Sr. Memorial National High School</p>
+                                <p className="text-[9px] text-black">2017 - 2021</p>
+                            </div>
+                            <div>
+                                <p className="text-[9px] text-black uppercase tracking-wider">College</p>
+                                <p className="text-[10px] font-medium text-black">East System Colleges of Rizal</p>
+                                <p className="text-[9px] text-black">2023 - Present</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            {/* ── END TOP ROW ── */}
+
+            {/* ── DIVIDER 1 ── */}
+            <div className="w-full h-px bg-black/10 mt-6" />
+
+            {/* ── BOTTOM ROW — About + Tech Stack ── */}
+            <div className="flex flex-col md:flex-row md:items-start gap-6 mt-6">
+
+                {/* LEFT — About */}
+                <div className="flex-1 min-w-0">
+                    <h2 className="text-base font-bold text-black mb-2">About</h2>
+                    <p className="text-sm text-black leading-relaxed text-justify break-words overflow-hidden">
+                        I'm an Information Technology student with experience in web development using HTML5, CSS3, JavaScript, Tailwind CSS, PHP, Python, MySQL, and basic React.js. I have developed websites and web applications through academic and team-based projects, gaining experience in user authentication, database management, and problem-solving.
+
+                        I also have a strong interest in system administration, network management, and IT infrastructure. My experience includes assembling and upgrading desktop computers, installing operating systems, diagnosing hardware issues, and performing basic network troubleshooting. I regularly use AI-assisted development tools such as Claude, Anti-Gravity, and Lovable to improve productivity and code quality. As a fast learner and team player, I am eager to gain hands-on experience, expand my technical expertise, and pursue a career in System Administration and Web Development.
+                    </p>
+                </div>
+
+                {/* RIGHT — Tech Stack */}
+                <div className="w-full md:w-[500px] shrink-0">
+                    <h2 className="text-base font-bold text-black mb-3">Tech Stack</h2>
+
+                    {/* Frontend */}
+                    <div className="mb-3">
+                        <p className="text-[11px] font-bold text-black uppercase tracking-wider mb-2">Frontend</p>
+                        <div className="flex flex-wrap gap-2">
+                            {["HTML5", "CSS3", "JavaScript", "Tailwind CSS", "React.js"].map(t => (
+                                <span key={t} className="px-3 py-1 text-xs font-bold border border-black rounded-full text-black">{t}</span>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Backend */}
+                    <div className="mb-3">
+                        <p className="text-[11px] font-bold text-black uppercase tracking-wider mb-2">Backend</p>
+                        <div className="flex flex-wrap gap-2">
+                            {["PHP", "Python", "MySQL", "REST API"].map(t => (
+                                <span key={t} className="px-3 py-1 text-xs font-bold border border-black rounded-full text-black">{t}</span>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Tools & Platforms */}
+                    <div className="mb-3">
+                        <p className="text-[11px] font-bold text-black uppercase tracking-wider mb-2">Tools & Platforms</p>
+                        <div className="flex flex-wrap gap-2">
+                            {["XAMPP", "PhpMyAdmin", "Figma", "Microsoft Office"].map(t => (
+                                <span key={t} className="px-3 py-1 text-xs font-bold border border-black rounded-full text-black">{t}</span>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Version Control */}
+                    <div className="mb-3">
+                        <p className="text-[11px] font-bold text-black uppercase tracking-wider mb-2">Version Control</p>
+                        <div className="flex flex-wrap gap-2">
+                            {["Git", "GitHub"].map(t => (
+                                <span key={t} className="px-3 py-1 text-xs font-bold border border-black rounded-full text-black">{t}</span>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* AI Tools */}
+                    <div className="mb-3">
+                        <p className="text-[11px] font-bold text-black uppercase tracking-wider mb-2">AI Tools</p>
+                        <div className="flex flex-wrap gap-2">
+                            {["Claude", "Anti-Gravity", "Lovable"].map(t => (
+                                <span key={t} className="px-3 py-1 text-xs font-bold border border-black rounded-full text-black">{t}</span>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Desktop & IDE */}
+                    <div className="mb-3">
+                        <p className="text-[11px] font-bold text-black uppercase tracking-wider mb-2">Desktop & IDE</p>
+                        <div className="flex flex-wrap gap-2">
+                            {["VB.NET", "VS Code"].map(t => (
+                                <span key={t} className="px-3 py-1 text-xs font-bold border border-black rounded-full text-black">{t}</span>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            {/* ── DIVIDER 2 ── */}
+            <div className="w-full h-px bg-black/10 mt-6" />
+
+            {/* ── PROJECTS ROW ── */}
+            <div className="flex flex-col md:flex-row md:items-start gap-6 mt-6">
+
+                {/* LEFT — Projects capsules */}
+                <div className="flex-1 min-w-0">
+                    <h2 className="text-base font-bold text-black mb-3">Projects</h2>
+                    <div className="flex flex-wrap gap-2">
+                        {projects.map((p, i) => (
+                            <button
+                                key={i}
+                                onClick={() => setActiveProject(p)}
+                                className={`px-4 py-1.5 text-xs font-bold border rounded-full transition-all cursor-pointer ${darkMode ? "border-white/30 text-white hover:bg-white hover:text-black" : "border-black text-black hover:bg-black hover:text-white"}`}
+                            >
+                                {p.title}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                {/* RIGHT — GitHub Stats */}
+                <div className="w-full md:w-[500px] shrink-0">
+                    <h2 className="text-base font-bold text-black mb-3">GitHub Stats</h2>
+                    <img
+                        src="https://github-readme-stats.vercel.app/api?username=ronmalakasmagyearn018&show_icons=true&theme=default&hide_border=true&bg_color=ffffff"
+                        alt="GitHub Stats"
+                        className="w-full rounded-xl border border-black/10"
+                    />
+                    <img
+                        src="https://github-readme-stats.vercel.app/api/top-langs/?username=ronmalakasmagyearn018&layout=compact&theme=default&hide_border=true&bg_color=ffffff"
+                        alt="Top Languages"
+                        className="w-full rounded-xl border border-black/10 mt-3"
+                    />
+                </div>
+
+            </div>
+
+            {/* ── PROJECT MODAL ── */}
+            {activeProject && (
+                <div
+                    className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4"
+                    onClick={() => setActiveProject(null)}
+                >
+                    <div
+                        className={`rounded-2xl p-6 w-full max-w-md shadow-xl ${darkMode ? "bg-[#1a1a1a]" : "bg-white"}`}
+                        onClick={e => e.stopPropagation()}
+                    >
+                        <div className="flex items-start justify-between mb-3">
+                            <h3 className={`text-base font-bold ${darkMode ? "text-white" : "text-black"}`}>{activeProject.title}</h3>
+                            <button
+                                onClick={() => setActiveProject(null)}
+                                className={`text-lg leading-none cursor-pointer ml-4 ${darkMode ? "text-white/40 hover:text-white" : "text-black/40 hover:text-black"}`}
+                            >✕</button>
+                        </div>
+                        <div className="flex flex-wrap gap-2 mb-3">
+                            {activeProject.tech.map((t, i) => (
+                                <span key={i} className={`px-3 py-1 text-xs font-bold border rounded-full ${darkMode ? "border-white/20 text-white" : "border-black/20 text-black"}`}>{t}</span>
+                            ))}
+                        </div>
+                        <p className={`text-sm leading-relaxed mb-4 ${darkMode ? "text-white/60" : "text-black/70"}`}>{activeProject.description}</p>
+                        <a
+                            href={activeProject.repo}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 px-4 py-2 text-xs font-bold rounded hover:opacity-80 transition-opacity"
+                            style={{backgroundColor: darkMode ? "#ffffff" : "#000000", color: darkMode ? "#000000" : "#ffffff"}}
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" style={{fill: darkMode ? "#000000" : "#ffffff"}}>
+                                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577v-2.165c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.63-5.37-12-12-12z"/>
+                            </svg>
+                            View Repository
+                        </a>
+                    </div>
+                </div>
+            )}
+
+            {/* ── DIVIDER 3 ── */}
+            <div className="w-full h-px bg-black/10 mt-6" />
+
+            {/* ── 4 CONTAINERS ROW ── */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+
+                {/* 1 — Social Links */}
+                <div className="border border-black/10 rounded-xl p-4 flex flex-col gap-3">
+                    <h2 className="text-sm font-bold text-black">Social Links</h2>
+                    <div className="flex flex-col gap-2">
+
+                        {/* LinkedIn */}
+                        <a href="https://www.linkedin.com/in/ronlouie-magsipoc-10751b38b/" className="flex items-center gap-3 group">
+                            <div className="w-7 h-7 rounded border border-black/10 flex items-center justify-center shrink-0 bg-black/[0.03] group-hover:bg-black group-hover:border-black transition-all">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-black group-hover:text-white transition-colors" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                                </svg>
+                            </div>
+                            <span className="text-xs text-black relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-black after:transition-all after:duration-300 group-hover:after:w-full">LinkedIn</span>
+                        </a>
+
+                        {/* GitHub */}
+                        <a href="https://github.com/ronmalakasmagyearn018" className="flex items-center gap-3 group">
+                            <div className="w-7 h-7 rounded border border-black/10 flex items-center justify-center shrink-0 bg-black/[0.03] group-hover:bg-black group-hover:border-black transition-all">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-black group-hover:text-white transition-colors" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577v-2.165c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.63-5.37-12-12-12z"/>
+                                </svg>
+                            </div>
+                            <span className="text-xs text-black relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-black after:transition-all after:duration-300 group-hover:after:w-full">GitHub</span>
+                        </a>
+
+                        {/* Instagram */}
+                        <a href="https://www.instagram.com/ronzsk/" className="flex items-center gap-3 group">
+                            <div className="w-7 h-7 rounded border border-black/10 flex items-center justify-center shrink-0 bg-black/[0.03] group-hover:bg-black group-hover:border-black transition-all">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-black group-hover:text-white transition-colors" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/>
+                                </svg>
+                            </div>
+                            <span className="text-xs text-black relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-black after:transition-all after:duration-300 group-hover:after:w-full">Instagram</span>
+                        </a>
+
+                        {/* Facebook */}
+                        <a href="https://www.facebook.com/ronlouie.magsipoc.1" className="flex items-center gap-3 group">
+                            <div className="w-7 h-7 rounded border border-black/10 flex items-center justify-center shrink-0 bg-black/[0.03] group-hover:bg-black group-hover:border-black transition-all">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-black group-hover:text-white transition-colors" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                                </svg>
+                            </div>
+                            <span className="text-xs text-black relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-black after:transition-all after:duration-300 group-hover:after:w-full">Facebook</span>
+                        </a>
+
+                        {/* TikTok */}
+                        <a href="https://www.tiktok.com/@ronzsx_" className="flex items-center gap-3 group">
+                            <div className="w-7 h-7 rounded border border-black/10 flex items-center justify-center shrink-0 bg-black/[0.03] group-hover:bg-black group-hover:border-black transition-all">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-black group-hover:text-white transition-colors" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/>
+                                </svg>
+                            </div>
+                            <span className="text-xs text-black relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-black after:transition-all after:duration-300 group-hover:after:w-full">TikTok</span>
+                        </a>
+
+                    </div>
+                </div>
+
+                {/* 2 — Certifications */}
+                <div className="border border-black/10 rounded-xl p-4 flex flex-col gap-3">
+                    <h2 className="text-sm font-bold text-black">Certifications</h2>
+                    <div className="flex flex-col gap-3">
+
+                        <div className="flex items-start gap-3">
+                            <div className="w-7 h-7 rounded border border-black/10 flex items-center justify-center shrink-0 bg-black/[0.03] mt-0.5">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-black" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p className="text-xs font-bold text-black leading-snug">Claude 101</p>
+                                <p className="text-[10px] text-black mt-0.5">Anthropic</p>
+                            </div>
+                        </div>
+
+                        <div className="w-full h-px bg-black/5" />
+
+                        <div className="flex items-start gap-3">
+                            <div className="w-7 h-7 rounded border border-black/10 flex items-center justify-center shrink-0 bg-black/[0.03] mt-0.5">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-black" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p className="text-xs font-bold text-black leading-snug">Setting Up Computer Networks</p>
+                                <p className="text-[10px] text-black mt-0.5">TESDA — Completion</p>
+                            </div>
+                        </div>
+
+                        <div className="w-full h-px bg-black/5" />
+
+                        <div className="flex items-start gap-3">
+                            <div className="w-7 h-7 rounded border border-black/10 flex items-center justify-center shrink-0 bg-black/[0.03] mt-0.5">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-black" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p className="text-xs font-bold text-black leading-snug">Maintaining Computer Systems and Networks</p>
+                                <p className="text-[10px] text-black mt-0.5">TESDA — Completion</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                {/* 3 — Email */}
+                <div className="border border-black/10 rounded-xl p-4 flex flex-col gap-3">
+                    <h2 className="text-sm font-bold text-black">Email</h2>
+                    <div className="flex flex-col gap-2">
+
+                        <a href="mailto:ronlouiemagsipoc210@gmail.com" className="flex items-center gap-3 group">
+                            <div className="w-7 h-7 rounded border border-black/10 flex items-center justify-center shrink-0 bg-black/[0.03] group-hover:bg-black group-hover:border-black transition-all">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-black group-hover:text-white transition-colors" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                                </svg>
+                            </div>
+                            <span className="text-xs text-black relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-black after:transition-all after:duration-300 group-hover:after:w-full break-all">ronlouiemagsipoc210@gmail.com</span>
+                        </a>
+
+                        <a href="mailto:magsipocronlouie@gmail.com" className="flex items-center gap-3 group">
+                            <div className="w-7 h-7 rounded border border-black/10 flex items-center justify-center shrink-0 bg-black/[0.03] group-hover:bg-black group-hover:border-black transition-all">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-black group-hover:text-white transition-colors" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                                </svg>
+                            </div>
+                            <span className="text-xs text-black relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-black after:transition-all after:duration-300 group-hover:after:w-full break-all">magsipocronlouie@gmail.com</span>
+                        </a>
+
+                        <a href="mailto:ronlouiemagsipoc1@gmail.com" className="flex items-center gap-3 group">
+                            <div className="w-7 h-7 rounded border border-black/10 flex items-center justify-center shrink-0 bg-black/[0.03] group-hover:bg-black group-hover:border-black transition-all">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-black group-hover:text-white transition-colors" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                                </svg>
+                            </div>
+                            <span className="text-xs text-black relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-black after:transition-all after:duration-300 group-hover:after:w-full break-all">ronlouiemagsipoc1@gmail.com</span>
+                        </a>
+
+                    </div>
+                </div>
+
+                {/* 4 — Interests */}
+                <div className="border border-black/10 rounded-xl p-4 flex flex-col gap-3">
+                    <h2 className="text-sm font-bold text-black">Interests</h2>
+                    <div className="flex flex-col gap-2">
+
+                        <div className="flex items-center gap-3">
+                            <div className="w-7 h-7 rounded border border-black/10 flex items-center justify-center shrink-0 bg-black/[0.03]">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-black" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 2c-.83 0-1.5-.67-1.5-1.5S14.67 12 15.5 12s1.5.67 1.5 1.5S16.33 15 15.5 15zm3-3c-.83 0-1.5-.67-1.5-1.5S17.67 10 18.5 10s1.5.67 1.5 1.5S19.33 12 18.5 12z"/>
+                                </svg>
+                            </div>
+                            <span className="text-xs text-black">Gaming</span>
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                            <div className="w-7 h-7 rounded border border-black/10 flex items-center justify-center shrink-0 bg-black/[0.03]">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-black" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/>
+                                </svg>
+                            </div>
+                            <span className="text-xs text-black">Coding</span>
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                            <div className="w-7 h-7 rounded border border-black/10 flex items-center justify-center shrink-0 bg-black/[0.03]">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-black" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 14H8v-2h8v2zm0-4H8v-2h8v2zm0-4H8V6h8v2z"/>
+                                </svg>
+                            </div>
+                            <span className="text-xs text-black">Reading Manga</span>
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                            <div className="w-7 h-7 rounded border border-black/10 flex items-center justify-center shrink-0 bg-black/[0.03]">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-black" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/>
+                                </svg>
+                            </div>
+                            <span className="text-xs text-black">Self Studying</span>
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                            <div className="w-7 h-7 rounded border border-black/10 flex items-center justify-center shrink-0 bg-black/[0.03]">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-black" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M22 9V7h-2V5c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-2h2v-2h-2v-2h2v-2h-2V9h2zm-4 10H4V5h14v14zM6 13h5v4H6zm6-6h4v3h-4zM6 7h5v5H6zm6 4h4v6h-4z"/>
+                                </svg>
+                            </div>
+                            <span className="text-xs text-black">Hardware Assembling</span>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            {/* ── END 4 CONTAINERS ROW ── */}
+
+            {/* ── DIVIDER 4 ── */}
+            <div className="w-full h-px bg-black/10 mt-6" />
+
+            {/* ── GALLERY ── */}
+            <div className="mt-6">
+                <h2 className="text-base font-bold text-black mb-3">Gallery</h2>
+
+                <div className="relative flex items-center gap-3">
+
+                    {/* LEFT ARROW */}
+                    <button
+                        onClick={() => {
+                            const el = document.getElementById("gallery-track");
+                            el.scrollBy({ left: -320, behavior: "smooth" });
+                        }}
+                        className="gallery-btn shrink-0 w-8 h-8 flex items-center justify-center rounded border border-black/10 bg-white hover:bg-black hover:text-white transition-all cursor-pointer"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+                        </svg>
+                    </button>
+
+                    {/* SCROLLABLE TRACK */}
+                    <div
+                        id="gallery-track"
+                        className="flex gap-3 overflow-x-auto scroll-smooth flex-1"
+                        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+                    >
+                        {Array.from({ length: 13 }, (_, i) => i + 1).map(n => (
+                            <img
+                                key={n}
+                                src={`../../images/gallery/${n}.jpg`}
+                                alt={`Gallery ${n}`}
+                                onClick={() => {
+                                    setGalleryIndex(n - 1);
+                                    setGalleryOpen(true);
+                                }}
+                                className="w-40 h-28 object-cover rounded-xl border border-black/10 shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
+                            />
+                        ))}
+                    </div>
+
+                    {/* RIGHT ARROW */}
+                    <button
+                        onClick={() => {
+                            const el = document.getElementById("gallery-track");
+                            el.scrollBy({ left: 320, behavior: "smooth" });
+                        }}
+                        className="gallery-btn shrink-0 w-8 h-8 flex items-center justify-center rounded border border-black/10 bg-white hover:bg-black hover:text-white transition-all cursor-pointer"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                        </svg>
+                    </button>
+
+                </div>
+            </div>
+
+            {/* ── GALLERY MODAL ── */}
+            {galleryOpen && (
+                <div
+                    className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
+                    onClick={() => setGalleryOpen(false)}
+                >
+                    <div
+                        className="relative flex items-center gap-4"
+                        onClick={e => e.stopPropagation()}
+                    >
+                        {/* PREV */}
+                        <button
+                            onClick={() => setGalleryIndex(i => (i - 1 + 13) % 13)}
+                            className="w-9 h-9 flex items-center justify-center rounded border border-white/20 bg-white/10 hover:bg-white/20 text-white transition-all cursor-pointer shrink-0"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+                            </svg>
+                        </button>
+
+                        {/* IMAGE */}
+                        <div className="flex flex-col items-center gap-2">
+                            <img
+                                src={`../../images/gallery/${galleryIndex + 1}.jpg`}
+                                alt={`Gallery ${galleryIndex + 1}`}
+                                className="max-w-[80vw] max-h-[75vh] rounded-xl object-contain"
+                            />
+                            <p className="text-white/60 text-xs">{galleryIndex + 1} / 13</p>
+                        </div>
+
+                        {/* NEXT */}
+                        <button
+                            onClick={() => setGalleryIndex(i => (i + 1) % 13)}
+                            className="w-9 h-9 flex items-center justify-center rounded border border-white/20 bg-white/10 hover:bg-white/20 text-white transition-all cursor-pointer shrink-0"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                            </svg>
+                        </button>
+
+                        {/* CLOSE */}
+                        <button
+                            onClick={() => setGalleryOpen(false)}
+                            className="absolute -top-10 right-0 text-white/60 hover:text-white text-lg cursor-pointer"
+                        >&#x2715;</button>
+                    </div>
+                </div>
+            )}
+
+            {/* ── FOOTER ── */}
+            <div className="w-full h-px bg-black/10 mt-6" />
+            <div className="mt-4 text-center">
+                <p className="text-xs text-black">© 2026 Ron Louie Magsipoc. All Rights Reserved.</p>
+            </div>
+
+            {/* ── CHAT BUTTON ── */}
+            <button
+                onClick={() => setChatOpen(true)}
+                className="chat-trigger fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 bg-black text-white text-sm font-bold rounded-xl shadow-lg hover:opacity-80 transition-opacity cursor-pointer"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+                </svg>
+                Chat with Ron
+            </button>
+
+            {/* ── CHAT MODAL ── */}
+            {chatOpen && (
+                <div className={`fixed bottom-20 right-6 z-50 w-80 rounded-2xl border shadow-[0_8px_40px_rgba(0,0,0,0.15)] flex flex-col overflow-hidden ${darkMode ? "bg-[#111] border-white/10" : "bg-white border-black/10"}`} style={{height: "420px"}}>
+
+                    {/* HEADER */}
+                    <div className={`flex items-center justify-between px-4 py-3 ${darkMode ? "bg-[#1a1a1a]" : "bg-black"}`}>
+                        <div className="flex items-center gap-2">
+                            <div className="w-7 h-7 rounded-full overflow-hidden border border-white/20">
+                                <img src="../images/ron_portfolio.jpg" alt="Ron" className="w-full h-full object-cover" />
+                            </div>
+                            <div>
+                                <p className="text-xs font-bold leading-none text-white">Ron Louie</p>
+                                <p className="text-[10px] text-white/50">Ask me anything!</p>
+                            </div>
+                        </div>
+                        <button onClick={() => setChatOpen(false)} className="text-lg leading-none cursor-pointer text-white/50 hover:text-white">✕</button>
+                    </div>
+
+                    {/* MESSAGES */}
+                    <div id="chat-messages" className="flex-1 overflow-y-auto p-3 flex flex-col gap-2">
+                        {chatMessages.map((msg, i) => (
+                            <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                                <div className={`max-w-[75%] px-3 py-2 rounded-xl text-xs leading-relaxed ${msg.role === "user" ? (darkMode ? "bg-white text-black rounded-br-none" : "bg-black text-white rounded-br-none") : (darkMode ? "bg-white/10 text-white rounded-bl-none" : "bg-black/5 text-black rounded-bl-none")}`}>
+                                    {msg.content}
+                                </div>
+                            </div>
+                        ))}
+                        {chatLoading && (
+                            <div className="flex justify-start">
+                                <div className={`px-3 py-2 rounded-xl rounded-bl-none text-xs ${darkMode ? "bg-white/10 text-white" : "bg-black/5 text-black"}`}>
+                                    <span className="animate-pulse">typing...</span>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* INPUT */}
+                    <div className={`flex items-center gap-2 px-3 py-3 border-t ${darkMode ? "border-white/10" : "border-black/10"}`}>
+                        <input
+                            type="text"
+                            value={chatInput}
+                            onChange={e => setChatInput(e.target.value)}
+                            onKeyDown={e => e.key === "Enter" && sendMessage()}
+                            placeholder="Ask about Ron..."
+                            className={`flex-1 text-xs px-3 py-2 rounded-lg border outline-none transition-colors ${darkMode ? "border-white/10 bg-white/5 text-white placeholder-white/30 focus:border-white/30" : "border-black/10 bg-black/[0.03] text-black focus:border-black/30"}`}
+                        />
+                        <button
+                            onClick={sendMessage}
+                            disabled={chatLoading}
+                            className={`w-8 h-8 flex items-center justify-center rounded-lg hover:opacity-80 transition-opacity cursor-pointer disabled:opacity-40 ${darkMode ? "bg-white text-black" : "bg-black text-white"}`}
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                </div>
+            )}
+
+
+        </div>
+        );
+      }
+
+      ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+    </script>
+    <script src="./js/typing.js"></script>
+  </body>
+</html>
