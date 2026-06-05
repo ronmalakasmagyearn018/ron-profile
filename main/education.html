@@ -23,7 +23,7 @@
           school: "Don Jose Ynares Sr. Memorial Elementary School",
           detail: "Completed elementary education.",
           years: "2011 – 2017",
-          logo: "./images/logo/elementary.png",
+          logo: "../images/logo/elementary.png",
           side: "left",
           achievement: null,
         },
@@ -33,7 +33,7 @@
           school: "Don Jose Ynares Sr. Memorial National High School",
           detail: "Specialized in DRAFTING curriculum.",
           years: "2017 – 2021",
-          logo: "./images/logo/jhs.png",
+          logo: "../images/logo/jhs.png",
           side: "right",
           achievement: "🥉 Science Quiz Bee — 3rd Place",
         },
@@ -43,7 +43,7 @@
           school: "Angono National High School",
           detail: "Completed STEM Strand.",
           years: "2021 – 2023",
-          logo: "./images/logo/shs.png",
+          logo: "../images/logo/shs.png",
           side: "left",
           achievement: "🏅 With Honors",
         },
@@ -53,7 +53,7 @@
           school: "East System College of Rizal",
           detail: "Bachelor of Science in Information Technology.",
           years: "2023 – Present",
-          logo: "./images/logo/college.png",
+          logo: "../images/logo/college.png",
           side: "right",
           achievement: null,
         },
@@ -83,13 +83,13 @@
         const isSm = size === "sm";
         return (
           <div className="flex flex-col gap-1 min-w-0">
-            <span className={`${isSm ? "text-[9px]" : "text-[10px]"} uppercase tracking-widest font-semibold ${darkMode ? "text-white/35" : "text-black/35"}`}>
+            <span className={`${isSm ? "text-[9px]" : "text-[10px]"} uppercase tracking-widest font-semibold`} style={{color: darkMode ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.35)"}}>
               {item.level}
             </span>
             <p className={`${isSm ? "text-xs" : "text-sm"} font-bold leading-snug ${darkMode ? "text-white" : "text-black"}`}>
               {item.school}
             </p>
-            <p className={`${isSm ? "text-[11px]" : "text-xs"} ${darkMode ? "text-white/55" : "text-black/55"}`}>
+            <p className={`${isSm ? "text-[11px]" : "text-xs"}`} style={{color: darkMode ? "rgba(255,255,255,0.55)" : "rgba(0,0,0,0.55)"}}>
               {item.detail}
             </p>
             {item.achievement && (
@@ -97,7 +97,7 @@
                 {item.achievement}
               </span>
             )}
-            <span className={`mt-1 self-start ${isSm ? "text-[9px]" : "text-[10px]"} px-2 py-0.5 rounded-full font-medium ${darkMode ? "bg-white/8 text-white/60" : "bg-black/5 text-black/50"}`}>
+            <span className={`mt-1 self-start ${isSm ? "text-[9px]" : "text-[10px]"} px-2 py-0.5 rounded-full font-medium`} style={{backgroundColor: darkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.05)", color: darkMode ? "rgba(255,255,255,0.60)" : "rgba(0,0,0,0.50)"}}>
               {item.years}
             </span>
           </div>
@@ -177,7 +177,7 @@
             {/* TOP BAR */}
             <div className="flex items-center mb-8">
               <a
-                href="./main/main.html"
+                href="./index.html"
                 className={`flex items-center gap-1.5 text-xs font-medium border rounded-full px-3 py-1.5 transition-colors cursor-pointer ${darkMode ? "border-white/20 text-white hover:bg-white/5" : "border-black/15 text-black hover:bg-black/5"}`}
               >
                 <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
@@ -204,7 +204,7 @@
                 <TimelineItem key={item.id} item={item} idx={idx} darkMode={darkMode} total={educationData.length} />
               ))}
             </div>
-            <div className="hidden md:grid md:grid-cols-[1fr_auto_1fr]">
+            <div className="hidden md:grid" style={{gridTemplateColumns: "1fr auto 1fr"}}>
               {educationData.map((item, idx) => (
                 <TimelineItem key={item.id} item={item} idx={idx} darkMode={darkMode} total={educationData.length} />
               ))}
@@ -212,7 +212,7 @@
 
             {/* FOOTER */}
             <div className="mt-2 text-center">
-              <p className={`text-[10px] ${darkMode ? "text-white/20" : "text-black/20"}`}>
+              <p className={`text-[10px] ${darkMode ? "text-white" : "text-black"}`}>
                 © {new Date().getFullYear()} Ron Louie Magsipoc
               </p>
             </div>
