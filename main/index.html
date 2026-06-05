@@ -161,67 +161,72 @@
 
             // NAME
             if (has("name", "who are you", "who is ron", "call you", "your name", "introduce"))
-                return "Hi! My name is Ron Louie Magsipoc. Nice to meet you!";
+                return "Hi! My Master's name is Ron Louie Magsipoc. Nice to meet you!";
 
             // AGE
             if (has("age", "how old", "years old", "old are you"))
-                return "I'm 20 years old!";
+                return "My Master's age is 20 years old!";
 
             // BIRTHDAY
             if (has("birthday", "birth", "born", "bday", "birthdate", "date of birth"))
-                return "My birthdate is September 18, 2005!";
+                return "My Master's birthdate is September 18, 2005!";
 
             // FAVORITE FOOD
             if (has("food", "eat", "favorite food", "fave food", "munggo", "hungry", "dish", "meal"))
-                return "My favorite food is Munggo! Simple but super delicious!";
+                return "My Master's favorite food is Munggo! Simple but super delicious!";
 
             // LOVE / PARTNER
             if (has("love", "girlfriend", "partner", "crush", "relationship", "special", "venice", "garna", "girl"))
-                return "My love is Venice Angel Garna, She's very special to me!";
+                return "My Master's love is Venice Angel Garna, She's very special to him!";
 
             // CAREER GOALS
             if (has("career", "goal", "dream", "ambition", "want to be", "future", "aspire", "plan", "achieve", "job", "work"))
-                return "What I want to achieve in my career is to become a System Administrator and get into Web Development! 💻🖥️";
+                return "What my Master wants to achieve in his career is to become a System Administrator and get into Web Development! 💻🖥️";
 
             // INTERNSHIP
             if (has("internship", "intern", "ojt", "on the job", "open for", "available", "hiring", "apply"))
-                return "Yes! I am open for internship! I would love the opportunity to gain hands-on experience!";
+                return "Yes! My Master is open for internship! He would love the opportunity to gain hands-on experience!";
 
             // LOCATION
             if (has("location", "where", "live", "from", "place", "address", "city", "province"))
-                return "I'm from Binangonan, Rizal!(near Angono, Rizal)";
+                return "My Master is from Binangonan, Rizal!(near Angono, Rizal)";
 
             // COURSE / SCHOOL
             if (has("course", "school", "college", "study", "student", "university", "education", "degree"))
-                return "I'm an Information Technology student at East System Colleges of Rizal (2023 - Present)! ";
+                return "My Master is an Information Technology student at East System Colleges of Rizal (2023 - Present)! ";
 
             // SKILLS / TECH
             if (has("skill", "tech", "stack", "language", "framework", "tools", "know", "code", "programming", "react", "html", "css", "javascript", "php", "python", "mysql"))
-                return "My tech stack includes HTML5, CSS3, JavaScript, Tailwind CSS, React.js, PHP, Python, MySQL, REST API, Git, GitHub, XAMPP, Figma, VB.NET, and VS Code! ";
+                return "My Master's tech stack includes HTML5, CSS3, JavaScript, Tailwind CSS, React.js, PHP, Python, MySQL, REST API, Git, GitHub, XAMPP, Figma, VB.NET, and VS Code! ";
 
             // PROJECTS
             if (has("project", "built", "made", "created", "portfolio", "work", "app", "website", "technilog", "lashopper", "padyak", "shipboxgo", "calstone"))
-                return "I've worked on projects like Technilog (smart security e-commerce), LaShopper (Shopee-inspired), ShipBoxGo! (VB.NET shipping system), Calstone Light O (fan site), and Padyak (bike shop frontend)!";
+                return "My Master has worked on projects like Technilog (smart security e-commerce), LaShopper (Shopee-inspired), ShipBoxGo! (VB.NET shipping system), Calstone Light O (fan site), and Padyak (bike shop frontend)!";
 
             // CERTIFICATIONS
             if (has("cert", "certification", "certificate", "tesda", "award", "achievement", "training"))
-                return "I have certifications in Claude 101 (Anthropic), Setting Up Computer Networks (TESDA), and Maintaining Computer Systems and Networks (TESDA)!";
+                return "My Master has certifications in Claude 101 (Anthropic), Setting Up Computer Networks (TESDA), and Maintaining Computer Systems and Networks (TESDA)!";
 
             // HOBBIES
             if (has("hobby", "hobbies", "interest", "free time", "fun", "game", "gaming", "manga", "reading", "self study", "hardware", "assembl"))
-                return "My hobbies include Gaming, Coding, Reading Manga, Self Studying, and Hardware Assembling!";
+                return "My Master's hobbies include Gaming, Coding, Reading Manga, Self Studying, and Hardware Assembling!";
 
             // GITHUB
             if (has("github", "git", "repo", "repository", "profile", "link"))
-                return "You can check my GitHub here: https://github.com/ronmalakasmagyearn018";
+                return "You can check my master's GitHub here: https://github.com/ronmalakasmagyearn018";
 
             // GREETINGS
             if (has("hi", "hello", "hey", "good morning", "good afternoon", "good evening", "sup", "yo", "kumusta", "kamusta"))
-                return "Hi there! I'm Ron's assistant! Feel free to ask me anything about Ron Louie Magsipoc!";
+                return "Hi there! I'm Ron's Chatbot! Feel free to ask me anything about Ron Louie Magsipoc!";
 
             // THANK YOU
             if (has("thank", "thanks", "ty", "salamat"))
                 return "You're welcome! Feel free to ask anything else about Ron's Chatbot";
+
+             // THANK YOU
+            if (has("master?", "you there?", "are you real?", "is this a chatbot?", "bot?", "robot?"))
+                return "Yes I am a chatbot created by Ron to answer questions about him! Ask me anything about Ron Louie Magsipoc!";
+
 
             // DEFAULT — unrelated
             return "Oops! Something went wrong I can only answer questions about Ron Louie Magsipoc. Try asking about his name, age, birthday, skills, career goals, or internship!";
@@ -919,7 +924,7 @@
                             </div>
                             <div>
                                 <p className="text-xs font-bold leading-none text-white">Ron Louie</p>
-                                <p className="text-[10px] text-white/50">Ask me anything!</p>
+                                <p className="text-[10px] text-white/50">Ask my Chatbot!</p>
                             </div>
                         </div>
                         <button onClick={() => setChatOpen(false)} className="text-lg leading-none cursor-pointer text-white/50 hover:text-white">✕</button>
