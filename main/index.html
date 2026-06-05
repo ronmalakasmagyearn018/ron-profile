@@ -500,14 +500,42 @@
                 <div className="w-full md:w-[500px] shrink-0">
                     <h2 className="text-base font-bold text-black mb-3">GitHub Stats</h2>
                     <img
-                        src="https://github-readme-stats.vercel.app/api?username=ronmalakasmagyearn018&show_icons=true&theme=default&hide_border=true&bg_color=ffffff"
+                        src="https://github-readme-stats.vercel.app/api?username=ronmalakasmagyearn018&show_icons=true&theme=default&hide_border=true&bg_color=ffffff&cache_seconds=86400"
                         alt="GitHub Stats"
                         className="w-full rounded-xl border border-black/10"
+                        onError={(e) => {
+                            if (!e.target.dataset.fallback) {
+                                e.target.dataset.fallback = "1";
+                                e.target.src = "https://github-readme-stats-sigma-five.vercel.app/api?username=ronmalakasmagyearn018&show_icons=true&theme=default&hide_border=true&bg_color=ffffff";
+                            } else if (e.target.dataset.fallback === "1") {
+                                e.target.dataset.fallback = "2";
+                                e.target.style.display = "none";
+                                const placeholder = document.createElement("div");
+                                placeholder.className = "w-full rounded-xl border border-black/10 flex items-center justify-center text-sm text-gray-400 bg-gray-50";
+                                placeholder.style.height = "120px";
+                                placeholder.textContent = "GitHub Stats temporarily unavailable";
+                                e.target.parentNode.insertBefore(placeholder, e.target.nextSibling);
+                            }
+                        }}
                     />
                     <img
-                        src="https://github-readme-stats.vercel.app/api/top-langs/?username=ronmalakasmagyearn018&layout=compact&theme=default&hide_border=true&bg_color=ffffff"
+                        src="https://github-readme-stats.vercel.app/api/top-langs/?username=ronmalakasmagyearn018&layout=compact&theme=default&hide_border=true&bg_color=ffffff&cache_seconds=86400"
                         alt="Top Languages"
                         className="w-full rounded-xl border border-black/10 mt-3"
+                        onError={(e) => {
+                            if (!e.target.dataset.fallback) {
+                                e.target.dataset.fallback = "1";
+                                e.target.src = "https://github-readme-stats-sigma-five.vercel.app/api/top-langs/?username=ronmalakasmagyearn018&layout=compact&theme=default&hide_border=true&bg_color=ffffff";
+                            } else if (e.target.dataset.fallback === "1") {
+                                e.target.dataset.fallback = "2";
+                                e.target.style.display = "none";
+                                const placeholder = document.createElement("div");
+                                placeholder.className = "w-full rounded-xl border border-black/10 flex items-center justify-center text-sm text-gray-400 bg-gray-50 mt-3";
+                                placeholder.style.height = "100px";
+                                placeholder.textContent = "Top Languages temporarily unavailable";
+                                e.target.parentNode.insertBefore(placeholder, e.target.nextSibling);
+                            }
+                        }}
                     />
                 </div>
 

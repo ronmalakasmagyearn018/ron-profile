@@ -11,3 +11,11 @@ body{
     --color-black: #000000;
     --color-white: #FFFFFF;
 }
+[data-dark="true"] p[class*="text-black"] {
+  color: #ffffff !important;
+}
+[data-dark="true"] p.text-black,
+[data-dark="true"] p[class*="text-black"]:not([class*="text-black/"]),
+[data-dark="true"] span.text-black,
+[data-dark="true"] span[class*="text-black"]:not([class*="text-black/"]),
+[data-dark="true"] label.text-black { color: #ffffff !important; }
