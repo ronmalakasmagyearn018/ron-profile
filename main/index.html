@@ -276,7 +276,7 @@
                     {/* IMAGE */}
                     <div className="relative w-24 h-24 md:w-40 md:h-40 shrink-0">
                         <div className="w-full h-full rounded border border-black/10 overflow-hidden">
-                            <img src="../images/ron_portfolio.jpg" alt="Profile Picture" className="w-full h-full object-cover" />
+                            <img src="./images/ron_portfolio.jpg" alt="Profile Picture" className="w-full h-full object-cover" />
                         </div>
                         {/* DARK MODE TOGGLE */}
                         <button
@@ -792,7 +792,7 @@
                         {Array.from({ length: 13 }, (_, i) => i + 1).map(n => (
                             <img
                                 key={n}
-                                src={`../../images/gallery/${n}.jpg`}
+                                src={`./images/gallery/${n}.jpg`}
                                 alt={`Gallery ${n}`}
                                 onClick={() => {
                                     setGalleryIndex(n - 1);
@@ -842,7 +842,7 @@
                         {/* IMAGE */}
                         <div className="flex flex-col items-center gap-2">
                             <img
-                                src={`../../images/gallery/${galleryIndex + 1}.jpg`}
+                                src={`./images/gallery/${galleryIndex + 1}.jpg`}
                                 alt={`Gallery ${galleryIndex + 1}`}
                                 className="max-w-[80vw] max-h-[75vh] rounded-xl object-contain"
                             />
@@ -893,7 +893,7 @@
                     <div className={`flex items-center justify-between px-4 py-3 ${darkMode ? "bg-[#1a1a1a]" : "bg-black"}`}>
                         <div className="flex items-center gap-2">
                             <div className="w-7 h-7 rounded-full overflow-hidden border border-white/20">
-                                <img src="../images/ron_portfolio.jpg" alt="Ron" className="w-full h-full object-cover" />
+                                <img src="./images/ron_portfolio.jpg" alt="Ron" className="w-full h-full object-cover" />
                             </div>
                             <div>
                                 <p className="text-xs font-bold leading-none text-white">Ron Louie</p>
