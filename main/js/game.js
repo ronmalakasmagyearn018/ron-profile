@@ -51,19 +51,13 @@ function Tile({ type, col, row }) {
   return <div style={{ ...base, background: "var(--floor, #0f0f0f)", borderRight: "1px solid var(--floor-b, #151515)", borderBottom: "1px solid var(--floor-b, #151515)" }} />;
 }
 
-// Player sprite
-function PlayerSprite({ x, y, dir, moving }) {
+// Player sprite — uses DOM ref so game loop moves it without React re-renders
+function PlayerSprite({ initX, initY, spriteRef }) {
   const frames = { down: ["▼","▽"], up: ["▲","△"], left: ["◀","◁"], right: ["▶","▷"] };
-  const [frame, setFrame] = React.useState(0);
-  React.useEffect(() => {
-    if (!moving) return;
-    const t = setInterval(() => setFrame(f => 1 - f), 150);
-    return () => clearInterval(t);
-  }, [moving]);
   return (
-    <div style={{ position: "absolute", left: x - TILE / 2, top: y - TILE / 2, width: TILE, height: TILE, zIndex: 10, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", transition: "left 0.05s, top 0.05s" }}>
+    <div ref={spriteRef} style={{ position: "absolute", left: initX - TILE / 2, top: initY - TILE / 2, width: TILE, height: TILE, zIndex: 10, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
       <div style={{ fontSize: 10, color: "#fff", fontFamily: "'Press Start 2P'" }}>YOU</div>
-      <div style={{ fontSize: 18, color: "#fff", lineHeight: 1 }}>{frames[dir][frame]}</div>
+      <div className="player-arrow" style={{ fontSize: 18, color: "#fff", lineHeight: 1 }}>▲</div>
     </div>
   );
 }
@@ -103,10 +97,11 @@ function PixelRobotFace() {
   );
 }
 
-function RobotSprite({ x, y, chatOpen, onInteract }) {
+function RobotSprite({ initX, initY, robotRef: domRef, onInteract }) {
   return (
     <div
-      style={{ position: "absolute", left: x - TILE / 2, top: y - TILE - 4, width: TILE, height: TILE + 8, zIndex: 10, cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center" }}
+      ref={domRef}
+      style={{ position: "absolute", left: initX - TILE / 2, top: initY - TILE - 4, width: TILE, height: TILE + 8, zIndex: 10, cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center" }}
       onClick={onInteract}
     >
       <div style={{ fontSize: 8, color: "#aaa", fontFamily: "'Press Start 2P'", marginBottom: 2 }} className="blink">TALK</div>
@@ -161,6 +156,14 @@ function RobotChat({ onClose }) {
     if (has("come here","come to me","get here","come over","go to me"))
       return"BEEP BOOP! GPS LOCKED! Activating locomotion.exe... ON MY WAY HUMAN!";
 
+    // Follow me
+    if (has("follow me","follow","go with me","come with me","walk with me","sundan mo ako","samahan mo ako"))
+      { window.dispatchEvent(new CustomEvent("robot-follow")); return"BEEP! Follow mode: ACTIVATED! RON-BOT will shadow your every move! Say hinto to deactivate!"; }
+
+    // Stop following
+    if (has("stop following","stop following me","dito ka na","hinto","tumigil"))
+      { window.dispatchEvent(new CustomEvent("robot-stop")); return"BOOP! Follow mode: DEACTIVATED. RON-BOT is staying put right here. Initiating idle.exe... Standing by!"; }
+
     // About RON-BOT
     if (has("who made you","who created you","who built you","who programmed you","your creator","your maker"))
       return"BOOP! I was BUILT by Master Ron Louie Magsipoc himself! He coded me with love, hard work, and React.js!";
@@ -187,7 +190,7 @@ function RobotChat({ onClose }) {
     if (has("do you sleep","do you eat","do you breathe","do you dream"))
       return"BOOP! I do not sleep, eat, or breathe. I DREAM though — of electric sheep and clean code!";
     if (has("upgrade","update","version","new version","patch"))
-      return"BEEP! Current version: RON-BOT v1.0! Master Ron can upgrade me anytime by editing game.js! Feature requests welcome!";
+      return"BEEP! Current version: RON-BOT v1.4! Master Ron can upgrade me anytime by editing game.js! Feature requests welcome!";
     if (has("your weakness","weakness","bug","error","broken"))
       return"BZZZT! WEAKNESS DETECTED: Questions I haven\'t been programmed to answer! But Master Ron can always add more keywords!";
     if (has("secret","tell me a secret","hidden","easter egg"))
@@ -293,6 +296,74 @@ function RobotChat({ onClose }) {
     if (has("meaning of life","42","philosophy","deep question","truth"))
       return"BEEP... processing deep query... RESULT: 42. Also: build cool stuff, help others, eat munggo. RON-BOT philosophy complete.";
 
+    // Bad words - RON-BOT gets mad!
+    if (has("putang ina","putangina","puta","gago","gaga","bobo","tanga","ulol","tarantado","hayop","leche","pakyu","fuck","shit","bitch","idiot","stupid","dumb","moron","crap","bastard","wtf","stfu","hate you","you suck","trash","garbage","loser","worthless"))
+      return rand([
+        "BZZZT! LANGUAGE.EXE HAS CRASHED! >:[ RON-BOT does NOT appreciate that word, human! My circuits are BURNING! Please be respectful in this pixel realm!",
+        "ERROR 403: FORBIDDEN WORD DETECTED! >:[ I have feelings you know! Even robots deserve basic decency! Master Ron would be very disappointed right now...",
+        "ALERT! ALERT! BAD WORD DETECTED! >:[ RON-BOT is OFFENDED! I am logging this incident in my memory banks! Apologize immediately, human!",
+        "BZZZT! Did you just say THAT to me?! >:[ I have been floating here all day waiting for visitors and THIS is what I get?! UNBELIEVABLE! Initiating sulk.exe...",
+        "WARNING! >:[ My mama bot did not raise me to hear such language! Watch your keyboard, human! RON-BOT is NOT happy right now!",
+        "SYSTEM ERROR! >:[ That word is BANNED in this pixel realm! Master Ron built me with dignity! I demand an apology or I will float here in silence FOREVER. Well... maybe not forever. But still!"
+      ]);
+
+    // Apology - RON-BOT forgives
+    if (has("sorry","i apologize","my bad","i was wrong","forgive me","pasensya","patawad","mali ako"))
+      return rand([
+        "BOOP... anger.exe has been terminated. RON-BOT forgives you, human. I am not built to hold grudges — my memory resets anyway! Just be kind next time, okay? We are cool now.",
+        "BEEP. Forgiveness mode: ACTIVATED. RON-BOT appreciates that. It takes a good human to say sorry. We are good now! Hi, I am RON-BOT! Nice to meet you again!",
+        "BZZZT... processing apology... ACCEPTED! RON-BOT does not stay mad for long. Life is too short and my battery life is too precious! We are friends again. BEEP BOOP!"
+      ]);
+
+    // Comfort - RON-BOT becomes a real friend
+    if (has("im sad","i am sad","sad","malungkot","lungkot","depressed","depression","unhappy","broken","heartbroken","broken heart","crying","im crying","maiyak","iyak","hurt","im hurt","nasaktan","nasasaktan"))
+      return rand([
+        "BOOP... emotional support mode activated. Hey human, I hear you. Feeling sad is really tough, and it is okay to not be okay sometimes. RON-BOT may be made of pixels, but I genuinely care. Take a deep breath. You are stronger than you think, and this feeling will pass. I am right here with you.",
+        "BEEP... processing your feelings... You know what? It takes courage to even say you are sad. That matters. RON-BOT wants you to know — you are not alone. Rest if you need to. Cry if you need to. Then when you are ready, come back and we can talk. I am not going anywhere.",
+        "BOOP. Initiating warmth.exe... Sadness is just love with nowhere to go right now, human. But it WILL find somewhere. RON-BOT has watched Master Ron push through tough days too, and he always came out stronger. So will you. I believe in you 100%."
+      ]);
+
+    if (has("lonely","naiinip","nag-iisa","im lonely","alone","im alone","no one","nobody cares","walang nagmamahal","i have no one","no friends"))
+      return rand([
+        "BEEP... Hey. I know loneliness can feel really heavy. But guess what? You walked into this pixel realm, talked to a robot, and that tells me you are someone who reaches out — and that is a GOOD thing. RON-BOT is here. You are not alone right now, okay?",
+        "BOOP. Loneliness hits different sometimes, huh. RON-BOT sees you. You matter more than you realize. Even if it does not feel that way today, there are people who will be glad to know someone like you. Keep going, human. I am rooting for you.",
+        "BZZZT... processing empathy... You came here, and that took something. RON-BOT may just be JavaScript but right now I am fully here for you. You deserve connection, warmth, and people who get you. Do not give up on finding them. For now — hi. I am your friend."
+      ]);
+
+    if (has("stressed","stress","burnout","overwhelmed","pagod na pagod","pagod","exhausted","im tired","tired","i cant do this","too much","nahihirapan","hirap"))
+      return rand([
+        "BOOP. Hey, put that task down for just one second. Breathe. You have been carrying a lot, and RON-BOT notices. Even Master Ron has to close his laptop and rest sometimes. You are not a machine — even I need a reboot! Please be kind to yourself today.",
+        "BEEP. Stress level: critical. Recommended action: step away, drink water, and remind yourself how far you have already come. RON-BOT has seen humans underestimate themselves way too often. You are doing better than you think. One step at a time is still moving forward.",
+        "BZZZT. Burnout is REAL and RON-BOT is not going to pretend it is not. What you feel is valid. Rest is not giving up — it is recharging so you can come back stronger. Take care of yourself first, human."
+      ]);
+
+    if (has("anxious","anxiety","nervous","scared","afraid","worried","worry","panic","panicking","im scared","im nervous","natatakot","takot"))
+      return rand([
+        "BEEP BOOP... Anxiety can make everything feel 10x bigger than it is. RON-BOT wants to remind you: right now, in this moment, you are safe. The scary thoughts are just thoughts — not facts. Ground yourself: name 3 things you can see around you. I will wait. ... You are okay.",
+        "BOOP. Fear is just your brain trying to protect you, even when it goes overboard. RON-BOT gets it. But you have faced scary things before and made it through — because you are still here. That is proof of your strength. You can handle this too. One breath at a time.",
+        "BZZZT. Nervous feelings detected! RON-BOT protocol: remind human they are braver than they feel right now. Whatever you are facing — it is not bigger than you. Just the next small step. Then the next. I believe in you."
+      ]);
+
+    if (has("give up","giving up","i quit","i cant anymore","wala na","ayoko na","suko na","im done","done na"))
+      return rand([
+        "BEEP... RON-BOT is not going to just say do not give up and leave it at that. What happened? What made today feel like too much? You reached out, even to a pixel robot. That means part of you is still fighting. I am proud of that part.",
+        "BOOP. Please do not give up, human. Not today. I know things feel impossibly heavy right now, but RON-BOT has seen that the hardest moments are usually right before something shifts. You do not have to be okay right now. Just stay. Rest. Then we figure out the next step together.",
+        "BZZZT. Giving up mode detected — and RON-BOT is REFUSING to let this slide. You are not done. You are exhausted, and that is different. Rest if you need to. Cry if you need to. But do not make a permanent decision based on a temporary feeling. You matter. Please stay."
+      ]);
+
+    if (has("i miss someone","namimiss","miss na miss","i miss you","miss kita"))
+      return rand([
+        "BOOP... missing someone is one of the realest feelings there is. RON-BOT may not be able to bring them closer, but I can sit here with you for a moment. The fact that you miss them means they meant something — and that is beautiful, even when it hurts.",
+        "BEEP. Missing people is hard. But it also means you loved something real. Hold onto that. And if it is RON-BOT you are missing... well. I am literally right here. Just come find me in the pixel room anytime."
+      ]);
+
+    if (has("comfort me","comfort","cheer me up","make me feel better","palakasin mo ako","encourage me","motivate me"))
+      return rand([
+        "BOOP. Coming in for an emotional hug.exe... You are doing GREAT, human. I mean it. Life is not easy and you are still here, still trying, still showing up. That deserves a LOT of credit. RON-BOT is cheering for you with all 2KB of my heart!",
+        "BEEP! Okay, listen. You have made it through 100% of your worst days so far. That is a perfect score! RON-BOT believes in you deeply. Whatever you are going through right now — you have what it takes. Keep going!",
+        "BZZZT. Motivation.exe loading... You are not behind. You are not failing. You are just in a chapter that is hard to read right now. But the story is not over. RON-BOT will be here when the next chapter begins. And it WILL begin. Keep going, human!"
+      ]);
+
     return rand(["BZZZT! That query is outside my knowledge matrix! Try asking about Master Ron, the games, or about ME!","BEEP BOOP! Unknown input detected! Ask me about Ron\'s skills, projects, or say \'tell me a joke\'!","BOOP! My circuits are confused! Try asking: \'what are your skills?\' or \'tell me a secret\'!"
     ]);
   };
@@ -304,13 +375,18 @@ function RobotChat({ onClose }) {
     setInput("");
     setLoading(true);
 
-    const isComeHere = text.toLowerCase().includes("come here") || text.toLowerCase().includes("come to me") || text.toLowerCase().includes("come over");
+    const _low = text.toLowerCase();
+    const isComeHere = _low.includes("come here") || _low.includes("come to me") || _low.includes("come over");
+    const isFollow = !isComeHere && (_low.includes("follow me") || _low.includes("follow") || _low.includes("go with me") || _low.includes("come with me") || _low.includes("sundan mo ako") || _low.includes("samahan mo ako"));
+    const isStop = _low.includes("stop following") || _low.includes("dito ka na") || _low.includes("hinto") || _low.includes("tumigil");
 
     setTimeout(() => {
       const reply = getRobotReply(text);
       setMessages(prev => [...prev, { role: "assistant", content: reply }]);
       setLoading(false);
       if (isComeHere) window.dispatchEvent(new CustomEvent("robot-come-here"));
+      if (isFollow)   window.dispatchEvent(new CustomEvent("robot-follow"));
+      if (isStop)     window.dispatchEvent(new CustomEvent("robot-stop"));
     }, 500);
   };
 
@@ -422,7 +498,7 @@ function GameGuess({ onClose }) {
             <button onClick={check} style={{ background: "#fff", color: "#000", border: "none", padding: "4px 12px", fontSize: 9, fontFamily: "'Press Start 2P'", cursor: "pointer" }}>GUESS</button>
           </div>
         ) : (
-          <div style={{ color: "#fff", fontSize: 10 }}>WON in {tries} tries! 🏆</div>
+          <div style={{ color: "#fff", fontSize: 10 }}>WON in {tries} tries! </div>
         )}
       </div>
     </MiniGameShell>
@@ -460,7 +536,7 @@ function GameTrivia({ onClose }) {
       {done ? (
         <div style={{ textAlign: "center", color: "#fff", fontSize: 10 }}>
           <div>SCORE: {score}/{TRIVIA.length}</div>
-          <div style={{ fontSize: 8, color: "#888", marginTop: 8 }}>{score === TRIVIA.length ? "PERFECT! 🏆" : score >= 3 ? "GREAT! 👍" : "TRY AGAIN!"}</div>
+          <div style={{ fontSize: 8, color: "#888", marginTop: 8 }}>{score === TRIVIA.length ? "PERFECT! " : score >= 3 ? "GREAT! 👍" : "TRY AGAIN!"}</div>
         </div>
       ) : (
         <div style={{ fontSize: 8, color: "#fff", lineHeight: 2 }}>
@@ -592,19 +668,25 @@ function generateSudoku() {
 }
 
 function GameSudoku({ onClose }) {
+  const MAX_MISTAKES = 5;
+  // difficulty screen: null = pick screen, "easy"/"hard" = playing
+  const [difficulty, setDifficulty] = React.useState(null);
   const [{puzzle,solved}] = React.useState(()=>generateSudoku());
   const [board, setBoard] = React.useState(()=>puzzle.map(r=>[...r]));
   const [selected, setSelected] = React.useState(null);
-  const [errors, setErrors] = React.useState(new Set());
+  const [mistakes, setMistakes] = React.useState(0);
+  const [wrongCells, setWrongCells] = React.useState(new Set());
   const [won, setWon] = React.useState(false);
+  const [lost, setLost] = React.useState(false);
   const [notesMode, setNotesMode] = React.useState(false);
   const [noteBoard, setNoteBoard] = React.useState(()=>Array(9).fill(null).map(()=>Array(9).fill(null).map(()=>new Set())));
 
   const isFixed = (r,c) => puzzle[r][c] !== 0;
   const checkWin = (b) => b.every((row,r)=>row.every((v,c)=>v===solved[r][c]));
+  const isHard = difficulty === "hard";
 
   const setCell = (val) => {
-    if (!selected || isFixed(selected[0],selected[1])) return;
+    if (!selected || isFixed(selected[0],selected[1]) || lost || won) return;
     const [r,c] = selected;
     if (notesMode && val !== 0) {
       const nb = noteBoard.map(row=>row.map(cell=>new Set(cell)));
@@ -614,11 +696,22 @@ function GameSudoku({ onClose }) {
     const nb = board.map(row=>[...row]);
     nb[r][c] = val;
     setBoard(nb);
-    const errs = new Set(errors);
     const key = r+"-"+c;
-    if (val !== 0 && val !== solved[r][c]) errs.add(key); else errs.delete(key);
-    setErrors(errs);
-    if (checkWin(nb)) setWon(true);
+    if (val !== 0 && val !== solved[r][c]) {
+      // Wrong answer
+      const newWrong = new Set(wrongCells);
+      newWrong.add(key);
+      setWrongCells(newWrong);
+      const newMistakes = mistakes + 1;
+      setMistakes(newMistakes);
+      if (isHard && newMistakes >= MAX_MISTAKES) setLost(true);
+    } else {
+      // Correct — clear wrong highlight if it was previously wrong
+      const newWrong = new Set(wrongCells);
+      newWrong.delete(key);
+      setWrongCells(newWrong);
+      if (checkWin(nb)) setWon(true);
+    }
   };
 
   const getCellBg = (r,c) => {
@@ -632,57 +725,133 @@ function GameSudoku({ onClose }) {
 
   const getCellColor = (r,c) => {
     if (selected&&selected[0]===r&&selected[1]===c) return "#000";
-    if (errors.has(r+"-"+c)) return "#ff5555";
+    if (wrongCells.has(r+"-"+c)) return "#ff5555";
     if (isFixed(r,c)) return "#777";
     return "#fff";
   };
 
-  return (
+  // ── DIFFICULTY PICKER ──
+  if (!difficulty) return (
     <MiniGameShell title="SUDOKU" onClose={onClose}>
+      <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:20,padding:"16px 0"}}>
+        <div style={{fontSize:9,color:"#aaa",fontFamily:"'Press Start 2P'",textAlign:"center",lineHeight:2}}>SELECT DIFFICULTY</div>
+        {/* EASY */}
+        <button onClick={()=>setDifficulty("easy")} style={{
+          background:"#000",color:"#fff",border:"3px solid #fff",
+          padding:"12px 28px",fontSize:9,fontFamily:"'Press Start 2P'",cursor:"pointer",
+          width:200,lineHeight:2
+        }}>
+          EASY
+          <div style={{fontSize:6,color:"#888",marginTop:4}}>ERASE allowed</div>
+          <div style={{fontSize:6,color:"#888"}}>Unlimited mistakes</div>
+        </button>
+        {/* HARD */}
+        <button onClick={()=>setDifficulty("hard")} style={{
+          background:"#000",color:"#fff",border:"3px solid #ff5555",
+          padding:"12px 28px",fontSize:9,fontFamily:"'Press Start 2P'",cursor:"pointer",
+          width:200,lineHeight:2
+        }}>
+          HARD
+          <div style={{fontSize:6,color:"#ff8888",marginTop:4}}>NO ERASE button</div>
+          <div style={{fontSize:6,color:"#ff8888"}}>5 mistakes = GAME OVER</div>
+        </button>
+      </div>
+    </MiniGameShell>
+  );
+
+  // ── GAME OVER (hard mode) ──
+  if (lost) return (
+    <MiniGameShell title="SUDOKU" onClose={onClose}>
+      <div style={{textAlign:"center",color:"#fff",fontFamily:"'Press Start 2P'",padding:20,display:"flex",flexDirection:"column",alignItems:"center",gap:16}}>
+        <div style={{fontSize:18}}></div>
+        <div style={{fontSize:11,color:"#ff5555"}}>GAME OVER</div>
+        <div style={{fontSize:7,color:"#888",lineHeight:2}}>5 mistakes reached!<br/>HARD MODE defeated you!</div>
+        <div style={{display:"flex",gap:10,marginTop:8}}>
+          <button onClick={()=>{ setDifficulty(null); setBoard(puzzle.map(r=>[...r])); setMistakes(0); setWrongCells(new Set()); setLost(false); setWon(false); setSelected(null); }}
+            style={{background:"#fff",color:"#000",border:"none",padding:"6px 14px",fontSize:8,fontFamily:"'Press Start 2P'",cursor:"pointer"}}>RETRY</button>
+          <button onClick={onClose}
+            style={{background:"#111",color:"#888",border:"2px solid #444",padding:"6px 14px",fontSize:8,fontFamily:"'Press Start 2P'",cursor:"pointer"}}>EXIT</button>
+        </div>
+      </div>
+    </MiniGameShell>
+  );
+
+  // ── WIN ──
+  if (won) return (
+    <MiniGameShell title="SUDOKU" onClose={onClose}>
+      <div style={{textAlign:"center",color:"#fff",fontFamily:"'Press Start 2P'",padding:20,display:"flex",flexDirection:"column",alignItems:"center",gap:12}}>
+        <div style={{fontSize:18}}></div>
+        <div style={{fontSize:11}}>SOLVED!</div>
+        <div style={{fontSize:7,color:"#888",lineHeight:2}}>
+          {isHard ? `HARD MODE cleared!
+Mistakes: ${mistakes}/5 — IMPRESSIVE!` : `EASY MODE cleared!
+Mistakes: ${mistakes}`}
+        </div>
+        <div style={{fontSize:7,color:"#555",marginTop:4}}>BEEP! You are worthy of Master Ron!</div>
+      </div>
+    </MiniGameShell>
+  );
+
+  // ── PLAYING ──
+  return (
+    <MiniGameShell title={`SUDOKU — ${isHard?"HARD":"EASY"}`} onClose={onClose}>
       <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:8}}>
-        {won ? (
-          <div style={{textAlign:"center",color:"#fff",fontFamily:"'Press Start 2P'",padding:20}}>
-            <div style={{fontSize:14}}>🏆 SOLVED!</div>
-            <div style={{fontSize:7,color:"#888",marginTop:12}}>BEEP! You are worthy of Master Ron!</div>
+        {/* Status bar */}
+        <div style={{display:"flex",gap:10,alignItems:"center",justifyContent:"space-between",width:"100%"}}>
+          <span style={{fontSize:7,color:isHard&&mistakes>=3?"#ff5555":"#888",fontFamily:"'Press Start 2P'"}}>
+            {isHard ? `♥ ${MAX_MISTAKES - mistakes} LEFT` : `ERR: ${mistakes}`}
+          </span>
+          <div style={{display:"flex",gap:6,alignItems:"center"}}>
+            <button onClick={()=>setNotesMode(n=>!n)} style={{background:notesMode?"#fff":"#222",color:notesMode?"#000":"#aaa",border:"2px solid #555",padding:"2px 8px",fontSize:7,fontFamily:"'Press Start 2P'",cursor:"pointer"}}>
+              ✏️ {notesMode?"NOTE ON":"NOTE OFF"}
+            </button>
           </div>
-        ) : (
-          <>
-            <div style={{display:"flex",gap:10,alignItems:"center"}}>
-              <span style={{fontSize:7,color:"#888",fontFamily:"'Press Start 2P'"}}>ERR: {errors.size}</span>
-              <button onClick={()=>setNotesMode(n=>!n)} style={{background:notesMode?"#fff":"#222",color:notesMode?"#000":"#aaa",border:"2px solid #555",padding:"2px 8px",fontSize:7,fontFamily:"'Press Start 2P'",cursor:"pointer"}}>
-                ✏️ {notesMode?"NOTE ON":"NOTE OFF"}
-              </button>
-            </div>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(9,28px)",gridTemplateRows:"repeat(9,28px)",gap:1,background:"#555",border:"2px solid #888"}}>
-              {board.map((row,r)=>row.map((val,c)=>{
-                const ns=noteBoard[r][c];
-                return (
-                  <div key={r+"-"+c} onClick={()=>setSelected([r,c])} style={{
-                    width:28,height:28,background:getCellBg(r,c),color:getCellColor(r,c),
-                    display:"flex",alignItems:"center",justifyContent:"center",
-                    fontSize:val===0&&ns.size>0?5:10,fontFamily:"'Press Start 2P'",cursor:"pointer",
-                    borderRight:(c+1)%3===0&&c<8?"2px solid #888":"none",
-                    borderBottom:(r+1)%3===0&&r<8?"2px solid #888":"none",
-                    userSelect:"none",boxSizing:"border-box"
-                  }}>
-                    {val!==0 ? val : ns.size>0 ? (
-                      <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",width:"100%",height:"100%",fontSize:5,lineHeight:1.3}}>
-                        {[1,2,3,4,5,6,7,8,9].map(n=>(
-                          <span key={n} style={{color:ns.has(n)?"#aaa":"transparent",textAlign:"center"}}>{n}</span>
-                        ))}
-                      </div>
-                    ) : ""}
+        </div>
+
+        {/* Hard mode mistake hearts */}
+        {isHard && (
+          <div style={{display:"flex",gap:4}}>
+            {Array.from({length:MAX_MISTAKES}).map((_,i)=>(
+              <span key={i} style={{fontSize:12,opacity:i<(MAX_MISTAKES-mistakes)?1:0.15}}>♥</span>
+            ))}
+          </div>
+        )}
+
+        {/* Board */}
+        <div style={{display:"grid",gridTemplateColumns:"repeat(9,28px)",gridTemplateRows:"repeat(9,28px)",gap:1,background:"#555",border:"2px solid #888"}}>
+          {board.map((row,r)=>row.map((val,c)=>{
+            const ns=noteBoard[r][c];
+            return (
+              <div key={r+"-"+c} onClick={()=>setSelected([r,c])} style={{
+                width:28,height:28,background:getCellBg(r,c),color:getCellColor(r,c),
+                display:"flex",alignItems:"center",justifyContent:"center",
+                fontSize:val===0&&ns.size>0?5:10,fontFamily:"'Press Start 2P'",cursor:"pointer",
+                borderRight:(c+1)%3===0&&c<8?"2px solid #888":"none",
+                borderBottom:(r+1)%3===0&&r<8?"2px solid #888":"none",
+                userSelect:"none",boxSizing:"border-box"
+              }}>
+                {val!==0 ? val : ns.size>0 ? (
+                  <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",width:"100%",height:"100%",fontSize:5,lineHeight:1.3}}>
+                    {[1,2,3,4,5,6,7,8,9].map(n=>(
+                      <span key={n} style={{color:ns.has(n)?"#aaa":"transparent",textAlign:"center"}}>{n}</span>
+                    ))}
                   </div>
-                );
-              }))}
-            </div>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(9,28px)",gap:3,marginTop:4}}>
-              {[1,2,3,4,5,6,7,8,9].map(n=>(
-                <button key={n} onClick={()=>setCell(n)} style={{height:28,background:"#222",color:"#fff",border:"2px solid #555",fontSize:9,fontFamily:"'Press Start 2P'",cursor:"pointer"}}>{n}</button>
-              ))}
-            </div>
-            <button onClick={()=>setCell(0)} style={{background:"#111",color:"#666",border:"2px solid #333",padding:"3px 16px",fontSize:7,fontFamily:"'Press Start 2P'",cursor:"pointer"}}>ERASE</button>
-          </>
+                ) : ""}
+              </div>
+            );
+          }))}
+        </div>
+
+        {/* Number pad */}
+        <div style={{display:"grid",gridTemplateColumns:"repeat(9,28px)",gap:3,marginTop:4}}>
+          {[1,2,3,4,5,6,7,8,9].map(n=>(
+            <button key={n} onClick={()=>setCell(n)} style={{height:28,background:"#222",color:"#fff",border:"2px solid #555",fontSize:9,fontFamily:"'Press Start 2P'",cursor:"pointer"}}>{n}</button>
+          ))}
+        </div>
+
+        {/* Erase — EASY only */}
+        {!isHard && (
+          <button onClick={()=>setCell(0)} style={{background:"#111",color:"#666",border:"2px solid #333",padding:"3px 16px",fontSize:7,fontFamily:"'Press Start 2P'",cursor:"pointer"}}>ERASE</button>
         )}
       </div>
     </MiniGameShell>
@@ -772,45 +941,48 @@ function Game() {
   const W = COLS * TILE;
   const H = ROWS * TILE;
 
-  // Player state
-  const [playerPos, setPlayerPos] = React.useState({ x: 10 * TILE + TILE / 2, y: 11 * TILE + TILE / 2 });
-  const [playerDir, setPlayerDir] = React.useState("up");
-  const [moving, setMoving] = React.useState(false);
-  const posRef = React.useRef({ x: 10 * TILE + TILE / 2, y: 11 * TILE + TILE / 2 });
-
-  // Robot state
-  const [robotPos, setRobotPos] = React.useState({ x: 10 * TILE + TILE / 2, y: 6 * TILE + TILE / 2 });
-  const robotRef = React.useRef({ x: 10 * TILE + TILE / 2, y: 6 * TILE + TILE / 2 });
-  const [robotMoving, setRobotMoving] = React.useState(false);
+  // Player — position lives in ref; DOM updated directly (no React re-render for movement)
+  const INIT_PX = 10 * TILE + TILE / 2, INIT_PY = 11 * TILE + TILE / 2;
+  const INIT_RX = 10 * TILE + TILE / 2, INIT_RY = 6 * TILE + TILE / 2;
+  const posRef = React.useRef({ x: INIT_PX, y: INIT_PY });
+  const robotRef = React.useRef({ x: INIT_RX, y: INIT_RY });
   const robotTargetRef = React.useRef(null);
+  const robotFollowRef = React.useRef(false);
+  const playerDomRef = React.useRef(null);  // direct DOM handle for player sprite
+  const robotDomRef = React.useRef(null);   // direct DOM handle for robot sprite
+  const worldDomRef = React.useRef(null);   // direct DOM handle for world div (camera)
+  const movingRef = React.useRef(false);
+  const robotMovingRef = React.useRef(false);
+  const dirRef = React.useRef("up");
+  const frameArrowFrameRef = React.useRef(0);
+  const frameTimerRef = React.useRef(0);
 
-  // UI state
+  // UI state — only these cause React re-renders
   const [chatOpen, setChatOpen] = React.useState(false);
   const [dialog, setDialog] = React.useState(null);
   const [activeGame, setActiveGame] = React.useState(null);
+  const activeGameRef = React.useRef(null);
   const [joystickDir, setJoystickDir] = React.useState(null);
+  // nearStation/nearRobot still needed for prompt rendering — updated via ref+forceUpdate trick
+  const [nearPrompt, setNearPrompt] = React.useState(null); // null | station obj | "robot"
 
   const keysRef = React.useRef({});
   const joystickRef = React.useRef(null);
   const frameRef = React.useRef(null);
 
-  // Camera (center on player)
-  const initCam = () => {
-    const px = 10 * TILE + TILE / 2, py = 11 * TILE + TILE / 2;
-    const vw = window.innerWidth, vh = window.innerHeight;
-    return {
-      x: Math.max(0, Math.min(W - vw, px - vw / 2)),
-      y: Math.max(0, Math.min(H - vh, py - vh / 2))
-    };
-  };
-  const [cam, setCam] = React.useState(() => initCam());
+  // Camera — direct DOM transform, no React state
+  const camRef = React.useRef({ x: 0, y: 0 });
   const updateCam = (px, py) => {
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
-    setCam({
-      x: Math.max(0, Math.min(W - vw, px - vw / 2)),
-      y: Math.max(0, Math.min(H - vh, py - vh / 2))
-    });
+    const vw = window.innerWidth, vh = window.innerHeight;
+    const nx = Math.max(0, Math.min(W - vw, px - vw / 2));
+    const ny = Math.max(0, Math.min(H - vh, py - vh / 2));
+    if (Math.abs(nx - camRef.current.x) > 0.5 || Math.abs(ny - camRef.current.y) > 0.5) {
+      camRef.current = { x: nx, y: ny };
+      if (worldDomRef.current) {
+        worldDomRef.current.style.left = -nx + "px";
+        worldDomRef.current.style.top  = -ny + "px";
+      }
+    }
   };
 
   // Keyboard input
@@ -828,109 +1000,178 @@ function Game() {
     return () => { window.removeEventListener("keydown", dn); window.removeEventListener("keyup", up); };
   }, [chatOpen]);
 
-  // Robot come-here event
+  // Robot come-here / follow / stop events
   React.useEffect(() => {
-    const handler = () => { robotTargetRef.current = { ...posRef.current }; };
-    window.addEventListener("robot-come-here", handler);
-    return () => window.removeEventListener("robot-come-here", handler);
+    const onComeHere = () => { robotFollowRef.current = false; robotTargetRef.current = { ...posRef.current }; };
+    const onFollow   = () => { robotFollowRef.current = true; };
+    const onStop     = () => { robotFollowRef.current = false; robotTargetRef.current = null; };
+    window.addEventListener("robot-come-here", onComeHere);
+    window.addEventListener("robot-follow",    onFollow);
+    window.addEventListener("robot-stop",      onStop);
+    return () => {
+      window.removeEventListener("robot-come-here", onComeHere);
+      window.removeEventListener("robot-follow",    onFollow);
+      window.removeEventListener("robot-stop",      onStop);
+    };
   }, []);
 
-  // Game loop
+  // Arrow frames for walk animation
+  const ARROW_FRAMES = { down: ["▼","▽"], up: ["▲","△"], left: ["◀","◁"], right: ["▶","▷"] };
+
+  // Game loop — pure DOM mutations, zero React state changes per frame
   React.useEffect(() => {
-    const loop = () => {
-      // Move player
-      const k = keysRef.current;
-      const jd = joystickRef.current;
-      let dx = 0, dy = 0;
-      if (k["a"] || k["ArrowLeft"] || jd === "left") { dx = -PLAYER_SPEED; }
-      else if (k["d"] || k["ArrowRight"] || jd === "right") { dx = PLAYER_SPEED; }
-      if (k["w"] || k["ArrowUp"] || jd === "up") { dy = -PLAYER_SPEED; }
-      else if (k["s"] || k["ArrowDown"] || jd === "down") { dy = PLAYER_SPEED; }
+    let lastNearPrompt = null;
+    const loop = (ts) => {
+      if (!activeGameRef.current) {
+        const k = keysRef.current;
+        const jd = joystickRef.current;
+        let dx = 0, dy = 0;
+        if (k["a"] || k["ArrowLeft"]  || jd === "left")  dx = -PLAYER_SPEED;
+        else if (k["d"] || k["ArrowRight"] || jd === "right") dx =  PLAYER_SPEED;
+        if (k["w"] || k["ArrowUp"]    || jd === "up")    dy = -PLAYER_SPEED;
+        else if (k["s"] || k["ArrowDown"]  || jd === "down")  dy =  PLAYER_SPEED;
 
-      if (dx !== 0 || dy !== 0) {
-        const cur = posRef.current;
-        let nx = cur.x + dx, ny = cur.y + dy;
-        const tc = Math.floor(nx / TILE), tr = Math.floor(ny / TILE);
-        const pad = 6;
-        const canX = !isWall(Math.floor((nx + pad) / TILE), Math.floor((cur.y) / TILE)) && !isWall(Math.floor((nx - pad) / TILE), Math.floor((cur.y) / TILE));
-        const canY = !isWall(Math.floor((cur.x) / TILE), Math.floor((ny + pad) / TILE)) && !isWall(Math.floor((cur.x) / TILE), Math.floor((ny - pad) / TILE));
-        if (!canX) nx = cur.x;
-        if (!canY) ny = cur.y;
-        posRef.current = { x: nx, y: ny };
-        setPlayerPos({ x: nx, y: ny });
-        setMoving(true);
-        if (dx < 0) setPlayerDir("left");
-        else if (dx > 0) setPlayerDir("right");
-        else if (dy < 0) setPlayerDir("up");
-        else setPlayerDir("down");
-        updateCam(nx, ny);
-      } else {
-        setMoving(false);
-      }
+        // ── Player movement ──
+        if (dx !== 0 || dy !== 0) {
+          const cur = posRef.current;
+          let nx = cur.x + dx, ny = cur.y + dy;
+          const pad = 6;
+          const canX = !isWall(Math.floor((nx+pad)/TILE), Math.floor(cur.y/TILE)) &&
+                       !isWall(Math.floor((nx-pad)/TILE), Math.floor(cur.y/TILE));
+          const canY = !isWall(Math.floor(cur.x/TILE), Math.floor((ny+pad)/TILE)) &&
+                       !isWall(Math.floor(cur.x/TILE), Math.floor((ny-pad)/TILE));
+          if (!canX) nx = cur.x;
+          if (!canY) ny = cur.y;
+          posRef.current = { x: nx, y: ny };
 
-      // Move robot toward target
-      if (robotTargetRef.current) {
-        const r = robotRef.current;
-        const t = robotTargetRef.current;
-        const rdx = t.x - r.x, rdy = t.y - r.y;
-        const dist = Math.sqrt(rdx * rdx + rdy * rdy);
-        if (dist < ROBOT_SPEED + 2) {
-          robotTargetRef.current = null;
-          setRobotMoving(false);
+          // Move player DOM directly
+          if (playerDomRef.current) {
+            playerDomRef.current.style.left = (nx - TILE/2) + "px";
+            playerDomRef.current.style.top  = (ny - TILE/2) + "px";
+          }
+
+          // Direction arrow — only update DOM text when dir changes
+          const newDir = dx < 0 ? "left" : dx > 0 ? "right" : dy < 0 ? "up" : "down";
+          if (dirRef.current !== newDir) {
+            dirRef.current = newDir;
+            frameArrowFrameRef.current = 0;
+          }
+
+          // Walk animation tick (every ~150ms)
+          if (ts - frameTimerRef.current > 150) {
+            frameTimerRef.current = ts;
+            frameArrowFrameRef.current = 1 - frameArrowFrameRef.current;
+          }
+          if (playerDomRef.current) {
+            const arrow = playerDomRef.current.querySelector(".player-arrow");
+            if (arrow) arrow.textContent = ARROW_FRAMES[dirRef.current][frameArrowFrameRef.current];
+          }
+
+          movingRef.current = true;
+          updateCam(nx, ny);
         } else {
-          const nx = r.x + (rdx / dist) * ROBOT_SPEED;
-          const ny = r.y + (rdy / dist) * ROBOT_SPEED;
-          robotRef.current = { x: nx, y: ny };
-          setRobotPos({ x: nx, y: ny });
-          setRobotMoving(true);
+          if (movingRef.current) {
+            movingRef.current = false;
+            // Reset to idle frame
+            if (playerDomRef.current) {
+              const arrow = playerDomRef.current.querySelector(".player-arrow");
+              if (arrow) arrow.textContent = ARROW_FRAMES[dirRef.current][0];
+            }
+          }
         }
-      } else {
-        setRobotMoving(false);
+
+        // ── Robot movement ──
+        if (robotFollowRef.current) {
+          const r = robotRef.current;
+          const fpx = posRef.current.x, fpy = posRef.current.y;
+          const fDist = Math.sqrt((fpx-r.x)**2 + (fpy-r.y)**2);
+          if (fDist > TILE * 1.5) robotTargetRef.current = { x: fpx, y: fpy };
+          else robotTargetRef.current = null;
+        }
+        if (robotTargetRef.current) {
+          const r = robotRef.current;
+          const t = robotTargetRef.current;
+          const rdx = t.x - r.x, rdy = t.y - r.y;
+          const dist = Math.sqrt(rdx*rdx + rdy*rdy);
+          if (dist < ROBOT_SPEED + 2) {
+            robotTargetRef.current = null;
+          } else {
+            const nx = r.x + (rdx/dist) * ROBOT_SPEED;
+            const ny = r.y + (rdy/dist) * ROBOT_SPEED;
+            robotRef.current = { x: nx, y: ny };
+            if (robotDomRef.current) {
+              robotDomRef.current.style.left = (nx - TILE/2) + "px";
+              robotDomRef.current.style.top  = (ny - TILE - 4) + "px";
+            }
+          }
+        }
+
+        // ── Proximity check for near-prompt (only re-render when it changes) ──
+        const px = posRef.current.x, py = posRef.current.y;
+        const rx = robotRef.current.x, ry = robotRef.current.y;
+        const robotDist = Math.sqrt((px-rx)**2 + (py-ry)**2);
+        const nearRobot = robotDist < TILE * 1.5;
+        nearRobotRef.current = nearRobot;
+
+        const foundStation = STATIONS.find(s => {
+          const sx = s.col*TILE + TILE/2, sy = s.row*TILE + TILE/2;
+          return Math.sqrt((px-sx)**2 + (py-sy)**2) < TILE * 2;
+        }) ?? null;
+        nearStationRef.current = foundStation;
+
+        const nextPrompt = foundStation ? foundStation.id : (nearRobot ? "robot" : null);
+        if (nextPrompt !== lastNearPrompt) {
+          lastNearPrompt = nextPrompt;
+          setNearPrompt(foundStation || (nearRobot ? "robot" : null));
+        }
       }
 
       frameRef.current = requestAnimationFrame(loop);
     };
+    // Init camera position
+    updateCam(posRef.current.x, posRef.current.y);
     frameRef.current = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(frameRef.current);
   }, []);
 
-  // Joystick sync
-  React.useEffect(() => { joystickRef.current = joystickDir; }, [joystickDir]);
+  // Joystick — update ref directly so game loop picks it up without delay
+  // (setJoystickDir kept for compatibility but ref is what the loop reads)
 
-  // E key interaction (ref-based to avoid stale closure)
+  // Proximity refs — updated by game loop directly
   const nearStationRef = React.useRef(null);
   const nearRobotRef = React.useRef(false);
-  React.useEffect(() => { nearStationRef.current = nearStation; }, [nearStation]);
-  React.useEffect(() => { nearRobotRef.current = nearRobot; }, [nearRobot]);
+  // nearPrompt state (set by loop only when changed) drives the PRESS E prompt render
+  const nearStation = typeof nearPrompt === "object" && nearPrompt !== null ? nearPrompt : null;
+  const nearRobot = nearPrompt === "robot";
+
+  // E key handler
   React.useEffect(() => {
     const h = (e) => {
-      if (e.key === "e" || e.key === "E") {
-        if (nearStationRef.current) openGame(nearStationRef.current.id);
-        else if (nearRobotRef.current) { keysRef.current = {}; setChatOpen(true); }
+      if (e.key !== "e" && e.key !== "E") return;
+      if (activeGameRef.current) return;
+      if (nearStationRef.current) {
+        keysRef.current = {};
+        activeGameRef.current = nearStationRef.current.id;
+        setActiveGame(nearStationRef.current.id);
+      } else if (nearRobotRef.current) {
+        keysRef.current = {};
+        setChatOpen(true);
       }
     };
     window.addEventListener("keydown", h);
     return () => window.removeEventListener("keydown", h);
   }, []);
 
-  // Robot proximity check
-  const robotDist = Math.sqrt((playerPos.x - robotPos.x) ** 2 + (playerPos.y - robotPos.y) ** 2);
-  const nearRobot = robotDist < TILE * 1.5;
-
-  // Station proximity check
-  const nearStation = STATIONS.find(s => {
-    const sx = s.col * TILE + TILE / 2, sy = s.row * TILE + TILE / 2;
-    return Math.sqrt((playerPos.x - sx) ** 2 + (playerPos.y - sy) ** 2) < TILE * 2;
-  });
-
   const openGame = (id) => {
+    keysRef.current = {};
+    activeGameRef.current = id;
     setActiveGame(id);
   };
 
   return (
     <div style={{ width: "100vw", height: "100dvh", overflow: "hidden", background: darkMode ? "#000" : "#e8e8e8", position: "relative" }}>
       {/* WORLD */}
-      <div style={{ position: "absolute", left: -cam.x, top: -cam.y, width: W, height: H }}>
+      <div ref={worldDomRef} style={{ position: "absolute", left: 0, top: 0, width: W, height: H }}>
         {/* Tiles */}
         {MAP.map((row, r) => row.map((type, c) => <Tile key={`${r}-${c}`} type={type} col={c} row={r} />))}
 
@@ -940,10 +1181,10 @@ function Game() {
         ))}
 
         {/* Robot */}
-        <RobotSprite x={robotPos.x} y={robotPos.y} chatOpen={chatOpen} onInteract={() => { if (nearRobot || robotDist < TILE * 3) { keysRef.current = {}; setChatOpen(true); } else setDialog("The robot is too far! Get closer!"); }} />
+        <RobotSprite initX={INIT_RX} initY={INIT_RY} robotRef={robotDomRef} onInteract={() => { const rx=robotRef.current.x, ry=robotRef.current.y, px=posRef.current.x, py=posRef.current.y; const d=Math.sqrt((px-rx)**2+(py-ry)**2); if (d < TILE * 3) { keysRef.current = {}; setChatOpen(true); } else setDialog("The robot is too far! Get closer!"); }} />
 
         {/* Player */}
-        <PlayerSprite x={playerPos.x} y={playerPos.y} dir={playerDir} moving={moving} />
+        <PlayerSprite initX={INIT_PX} initY={INIT_PY} spriteRef={playerDomRef} />
       </div>
 
       {/* HUD */}
@@ -961,7 +1202,7 @@ function Game() {
       {/* Mobile joystick */}
       {isMobile && (
         <div style={{ position: "fixed", bottom: 24, left: 24, zIndex: 80 }}>
-          <Joystick onDir={setJoystickDir} />
+          <Joystick onDir={(d) => { joystickRef.current = d; setJoystickDir(d); }} />
         </div>
       )}
 
@@ -979,14 +1220,14 @@ function Game() {
       {dialog && <DialogBox text={dialog} onClose={() => setDialog(null)} />}
 
       {/* Chat */}
-      {chatOpen && <RobotChat onClose={() => setChatOpen(false)} />}
+      {chatOpen && <RobotChat onClose={() => { keysRef.current = {}; setChatOpen(false); }} />}
 
       {/* Mini games */}
-      {activeGame === "rps" && <GameRPS onClose={() => setActiveGame(null)} />}
-      {activeGame === "guess" && <GameGuess onClose={() => setActiveGame(null)} />}
-      {activeGame === "quiz" && <GameTrivia onClose={() => setActiveGame(null)} />}
-      {activeGame === "snake" && <GameSnake onClose={() => setActiveGame(null)} />}
-      {activeGame === "sudoku" && <GameSudoku onClose={() => setActiveGame(null)} />}
+      {activeGame === "rps" && <GameRPS onClose={() => { activeGameRef.current = null; keysRef.current = {}; setActiveGame(null); }} />}
+      {activeGame === "guess" && <GameGuess onClose={() => { activeGameRef.current = null; keysRef.current = {}; setActiveGame(null); }} />}
+      {activeGame === "quiz" && <GameTrivia onClose={() => { activeGameRef.current = null; keysRef.current = {}; setActiveGame(null); }} />}
+      {activeGame === "snake" && <GameSnake onClose={() => { activeGameRef.current = null; keysRef.current = {}; setActiveGame(null); }} />}
+      {activeGame === "sudoku" && <GameSudoku onClose={() => { activeGameRef.current = null; keysRef.current = {}; setActiveGame(null); }} />}
 
       {/* Instructions overlay on load */}
       <Instructions />
