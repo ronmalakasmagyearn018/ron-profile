@@ -68,6 +68,40 @@ function PlayerSprite({ x, y, dir, moving }) {
 }
 
 // Robot sprite
+function PixelRobotFace() {
+  const s = (w, h, bg, extra = {}) => ({ width: w, height: h, background: bg, ...extra });
+  return (
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }} className="float-anim">
+      {/* Antenna */}
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+        <div style={s(3, 3, "#fff", { borderRadius: "50%" })} />
+        <div style={s(2, 4, "#aaa")} />
+      </div>
+      {/* Head */}
+      <div style={{ ...s(24, 20, "#4a9eff"), border: "2px solid #fff", borderRadius: 3, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 3, padding: "2px 0" }}>
+        {/* Eyes */}
+        <div style={{ display: "flex", gap: 5 }}>
+          <div style={{ ...s(5, 5, "#fff"), borderRadius: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <div style={s(3, 3, "#000", { borderRadius: "50%" })} />
+          </div>
+          <div style={{ ...s(5, 5, "#fff"), borderRadius: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <div style={s(3, 3, "#000", { borderRadius: "50%" })} />
+          </div>
+        </div>
+        {/* Mouth */}
+        <div style={{ display: "flex", gap: 2 }}>
+          {[0,1,2].map(i => <div key={i} style={s(4, 2, i === 1 ? "#fff" : "#aae")} />)}
+        </div>
+      </div>
+      {/* Body */}
+      <div style={{ ...s(20, 8, "#3a7ecc"), border: "1px solid #aaa", borderRadius: 2, display: "flex", alignItems: "center", justifyContent: "center", gap: 3 }}>
+        <div style={s(4, 4, "#fff", { borderRadius: "50%", opacity: 0.8 })} />
+        <div style={s(4, 4, "#7df", { borderRadius: 1 })} />
+      </div>
+    </div>
+  );
+}
+
 function RobotSprite({ x, y, chatOpen, onInteract }) {
   return (
     <div
@@ -75,8 +109,8 @@ function RobotSprite({ x, y, chatOpen, onInteract }) {
       onClick={onInteract}
     >
       <div style={{ fontSize: 8, color: "#aaa", fontFamily: "'Press Start 2P'", marginBottom: 2 }} className="blink">TALK</div>
-      <div style={{ fontSize: 22, lineHeight: 1 }} className="float-anim">🤖</div>
-      <div style={{ fontSize: 8, color: "#888", fontFamily: "'Press Start 2P'" }}>RON-BOT</div>
+      <PixelRobotFace />
+      <div style={{ fontSize: 8, color: "#888", fontFamily: "'Press Start 2P'", marginTop: 2 }}>RON-BOT</div>
     </div>
   );
 }
