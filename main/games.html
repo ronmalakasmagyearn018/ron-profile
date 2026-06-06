@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Ron's Game Room</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+  <script>
+    // Sync dark mode bg before React loads (prevents flash)
+    (function() {
+      const dark = localStorage.getItem("darkMode") === "true";
+      document.documentElement.style.setProperty("--floor", dark ? "#0f0f0f" : "#d0d0d0");
+      document.documentElement.style.setProperty("--floor-b", dark ? "#151515" : "#bebebe");
+      document.body.style.background = dark ? "#000" : "#e8e8e8";
+    })();
+  </script>
+  <style>
+    * { image-rendering: pixelated; }
+    body { margin: 0; background: #000; overflow: hidden; font-family: 'Press Start 2P', monospace; }
+    #root { width: 100vw; height: 100dvh; }
+    .pixel-border {
+      box-shadow: 0 0 0 2px #fff, 0 0 0 4px #000, 0 0 0 6px #fff;
+    }
+    .pixel-border-dark {
+      box-shadow: 0 0 0 2px #000, 0 0 0 4px #fff, 0 0 0 6px #000;
+    }
+    .dialog-box {
+      box-shadow: inset -3px -3px 0 #555, inset 3px 3px 0 #fff, 0 0 0 3px #000;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+    .blink { animation: blink 0.8s infinite; }
+    @keyframes walk-down { 0%{background-position-y:0px} 50%{background-position-y:-32px} 100%{background-position-y:0px} }
+    @keyframes walk-up { 0%{background-position-y:-64px} 50%{background-position-y:-96px} 100%{background-position-y:-64px} }
+    @keyframes walk-left { 0%{background-position-y:-128px} 50%{background-position-y:-160px} 100%{background-position-y:-128px} }
+    @keyframes walk-right { 0%{background-position-y:-192px} 50%{background-position-y:-224px} 100%{background-position-y:-192px} }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+    .float-anim { animation: float 2s ease-in-out infinite; }
+    @keyframes scanline {
+      0% { background-position: 0 0; }
+      100% { background-position: 0 100%; }
+    }
+    .crt-overlay {
+      pointer-events: none;
+      position: fixed; inset: 0; z-index: 9999;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+    }
+  </style>
+</head>
+<body>
+  <div class="crt-overlay"></div>
+  <div id="root"></div>
+  <script src="./js/game.js" type="text/babel"></script>
+</body>
+</html>

@@ -150,6 +150,7 @@
             { role: "assistant", content: "Hi! I'm Ron's chatbot! You can ask me about his name, age, birthday, favorite food, career goals, internship, and more!" }
         ]);
         const [chatInput, setChatInput] = React.useState("");
+        const [showSlashMenu, setShowSlashMenu] = React.useState(false);
         const [chatLoading, setChatLoading] = React.useState(false);
         const [darkMode, setDarkMode] = React.useState(() => localStorage.getItem("darkMode") === "true");
 
@@ -948,13 +949,26 @@
                         )}
                     </div>
 
+                    {/* SLASH MENU */}
+                    {showSlashMenu && (
+                        <div className={`border-t px-3 py-2 ${darkMode ? "border-white/10 bg-[#1a1a1a]" : "border-black/10 bg-gray-50"}`}>
+                            <button
+                                onClick={() => { window.location.href = "./games.html"; }}
+                                className={`w-full text-left flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs font-mono hover:opacity-80 cursor-pointer ${darkMode ? "bg-white/10 text-white" : "bg-black/5 text-black"}`}
+                            >
+                                <span className="font-bold">/play</span>
+                                <span className="opacity-50">— Open Game Room</span>
+                            </button>
+                        </div>
+                    )}
+
                     {/* INPUT */}
                     <div className={`flex items-center gap-2 px-3 py-3 border-t ${darkMode ? "border-white/10" : "border-black/10"}`}>
                         <input
                             type="text"
                             value={chatInput}
-                            onChange={e => setChatInput(e.target.value)}
-                            onKeyDown={e => e.key === "Enter" && sendMessage()}
+                            onChange={e => { setChatInput(e.target.value); setShowSlashMenu(e.target.value === "/"); }}
+                            onKeyDown={e => { if (e.key === "Enter") { if (chatInput.trim() === "/play") { window.location.href = "./games.html"; } else { sendMessage(); setShowSlashMenu(false); } } if (e.key === "Escape") setShowSlashMenu(false); }}
                             placeholder="Ask about Ron..."
                             className={`flex-1 text-xs px-3 py-2 rounded-lg border outline-none transition-colors ${darkMode ? "border-white/10 bg-white/5 text-white placeholder-white/30 focus:border-white/30" : "border-black/10 bg-black/[0.03] text-black focus:border-black/30"}`}
                         />
