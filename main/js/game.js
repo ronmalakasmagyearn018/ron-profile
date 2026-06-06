@@ -25,10 +25,11 @@ const MAP = [
 
 // Interactable stations
 const STATIONS = [
-  { id: "rps",   col: 5,  row: 5,  label: "Rock Paper Scissors", icon: "✊" },
-  { id: "guess", col: 14, row: 10, label: "Guess My Number",      icon: "🔢" },
-  { id: "quiz",  col: 5,  row: 9,  label: "Trivia Quiz",          icon: "❓" },
-  { id: "snake", col: 15, row: 9,  label: "Snake",                icon: "🐍" },
+  { id: "rps",    col: 5,  row: 5,  label: "Rock Paper Scissors", icon: "✊" },
+  { id: "guess",  col: 14, row: 10, label: "Guess My Number",     icon: "🔢" },
+  { id: "quiz",   col: 5,  row: 9,  label: "Trivia Quiz",         icon: "❓" },
+  { id: "snake",  col: 15, row: 9,  label: "Snake",               icon: "🐍" },
+  { id: "sudoku", col: 11, row: 2,  label: "Sudoku",              icon: "🔲" },
 ];
 
 const isWall = (col, row) => {
@@ -174,7 +175,7 @@ function RobotChat({ onClose }) {
     if (has("your language","speak tagalog","speak filipino","marunong ka","tagalog"))
       return"BEEP BOOP! I can process Filipino language inputs! Kumusta ka, human? RON-BOT is bilingual! 🇵🇭";
     if (has("your favorite","do you like","do you enjoy","what do you love","your hobby"))
-      return rand(["BOOP! My favorite activity is STANDING HERE and answering questions! Also... watching Master Ron code at 2AM. Dedication!","BEEP! I enjoy floating, blinking, and calculating the perfect WASD route across this pixel room!"]);
+      return rand(["BOOP! My favorite activity is STANDING HERE and answering questions! Also... watching Master Ron coding. Dedication!","BEEP! I enjoy floating, blinking, and calculating the perfect WASD route across this pixel room!"]);
     if (has("are you smart","how smart","your iq","intelligent","genius"))
       return"BEEP! IQ scan complete: OVER 9000. But my Master Ron is smarter — he BUILT me after all!";
     if (has("can you dance","dance","twerk","move"))
@@ -259,8 +260,10 @@ function RobotChat({ onClose }) {
       return"BEEP! Trivia Quiz is at the BOTTOM LEFT! Walk near the  icon! Questions about Master Ron await!";
     if (has("guess","number","guessing"))
       return"BOOP! Guess My Number is at the BOTTOM RIGHT area! Walk near the  icon! I\'m thinking of a number...";
+    if (has("sudoku","puzzle","number puzzle","fill the grid"))
+      return "BEEP! Sudoku station is at the TOP CENTER of the room! Walk near the 🔲 icon! Fill the 9x9 grid — no API key required, just BRAINPOWER! 🤖";
     if (has("game","play","minigame","games","fun","activity"))
-      return"BOOP! Walk near the icons to play:  Rock Paper Scissors |  Guess My Number |  Trivia Quiz |  Snake!";
+      return "BOOP! Walk near the icons to play: ✊ Rock Paper Scissors | 🔢 Guess My Number | ❓ Trivia Quiz | 🐍 Snake | 🔲 Sudoku! 🎮🤖";
 
     // Small talk
     if (has("thank","thanks","ty","salamat","appreciate"))
@@ -553,12 +556,134 @@ function GameSnake({ onClose }) {
           ))}
           <div style={{ position: "absolute", left: food[0] * SZ, top: food[1] * SZ, width: SZ - 1, height: SZ - 1, background: "#fff", border: "2px solid #000" }} />
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 36px)", gap: 4, marginTop: 4 }}>
-          {[["", [0,-1], "▲"], ["", null, ""], ["", [0,1], "▼"], ["", [-1,0], "◀"], ["", null, ""], ["", [1,0], "▶"]].map(([, nd, label], i) => (
-            nd ? <button key={i} onClick={() => dBtn(nd[0], nd[1])} style={{ height: 36, background: "#222", color: "#fff", border: "2px solid #555", fontSize: 12, fontFamily: "'Press Start 2P'", cursor: "pointer" }}>{label}</button>
-              : <div key={i} />
-          ))}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 40px)", gridTemplateRows: "repeat(3, 40px)", gap: 3, marginTop: 8 }}>
+          {/* Row 1: empty, UP, empty */}
+          <div />
+          <button onClick={() => dBtn(0, -1)} style={{ background: "#333", color: "#fff", border: "2px solid #666", fontSize: 14, fontFamily: "'Press Start 2P'", cursor: "pointer", borderRadius: 4 }}>▲</button>
+          <div />
+          {/* Row 2: LEFT, center, RIGHT */}
+          <button onClick={() => dBtn(-1, 0)} style={{ background: "#333", color: "#fff", border: "2px solid #666", fontSize: 14, fontFamily: "'Press Start 2P'", cursor: "pointer", borderRadius: 4 }}>◀</button>
+          <div style={{ background: "#222", border: "2px solid #444", borderRadius: 4 }} />
+          <button onClick={() => dBtn(1, 0)} style={{ background: "#333", color: "#fff", border: "2px solid #666", fontSize: 14, fontFamily: "'Press Start 2P'", cursor: "pointer", borderRadius: 4 }}>▶</button>
+          {/* Row 3: empty, DOWN, empty */}
+          <div />
+          <button onClick={() => dBtn(0, 1)} style={{ background: "#333", color: "#fff", border: "2px solid #666", fontSize: 14, fontFamily: "'Press Start 2P'", cursor: "pointer", borderRadius: 4 }}>▼</button>
+          <div />
         </div>
+      </div>
+    </MiniGameShell>
+  );
+}
+
+// ─── MINI GAME: SUDOKU ───────────────────────────────────────────────────────
+function generateSudoku() {
+  const base = [
+    [5,3,4,6,7,8,9,1,2],[6,7,2,1,9,5,3,4,8],[1,9,8,3,4,2,5,6,7],
+    [8,5,9,7,6,1,4,2,3],[4,2,6,8,5,3,7,9,1],[7,1,3,9,2,4,8,5,6],
+    [9,6,1,5,3,7,2,8,4],[2,8,7,4,1,9,6,3,5],[3,4,5,2,8,6,1,7,9],
+  ];
+  const shuffle = (arr) => { const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+  const rp=[...shuffle([0,1,2]),...shuffle([3,4,5]),...shuffle([6,7,8])];
+  const cp=[...shuffle([0,1,2]),...shuffle([3,4,5]),...shuffle([6,7,8])];
+  const solved=rp.map(r=>cp.map(c=>base[r][c]));
+  const puzzle=solved.map(r=>[...r]);
+  shuffle([...Array(81).keys()]).slice(0,46).forEach(i=>{puzzle[Math.floor(i/9)][i%9]=0;});
+  return {puzzle,solved};
+}
+
+function GameSudoku({ onClose }) {
+  const [{puzzle,solved}] = React.useState(()=>generateSudoku());
+  const [board, setBoard] = React.useState(()=>puzzle.map(r=>[...r]));
+  const [selected, setSelected] = React.useState(null);
+  const [errors, setErrors] = React.useState(new Set());
+  const [won, setWon] = React.useState(false);
+  const [notesMode, setNotesMode] = React.useState(false);
+  const [noteBoard, setNoteBoard] = React.useState(()=>Array(9).fill(null).map(()=>Array(9).fill(null).map(()=>new Set())));
+
+  const isFixed = (r,c) => puzzle[r][c] !== 0;
+  const checkWin = (b) => b.every((row,r)=>row.every((v,c)=>v===solved[r][c]));
+
+  const setCell = (val) => {
+    if (!selected || isFixed(selected[0],selected[1])) return;
+    const [r,c] = selected;
+    if (notesMode && val !== 0) {
+      const nb = noteBoard.map(row=>row.map(cell=>new Set(cell)));
+      if (nb[r][c].has(val)) nb[r][c].delete(val); else nb[r][c].add(val);
+      setNoteBoard(nb); return;
+    }
+    const nb = board.map(row=>[...row]);
+    nb[r][c] = val;
+    setBoard(nb);
+    const errs = new Set(errors);
+    const key = r+"-"+c;
+    if (val !== 0 && val !== solved[r][c]) errs.add(key); else errs.delete(key);
+    setErrors(errs);
+    if (checkWin(nb)) setWon(true);
+  };
+
+  const getCellBg = (r,c) => {
+    if (selected && selected[0]===r && selected[1]===c) return "#fff";
+    if (selected) {
+      const [sr,sc]=selected;
+      if (r===sr||c===sc||(Math.floor(r/3)===Math.floor(sr/3)&&Math.floor(c/3)===Math.floor(sc/3))) return "#2a2a2a";
+    }
+    return "#111";
+  };
+
+  const getCellColor = (r,c) => {
+    if (selected&&selected[0]===r&&selected[1]===c) return "#000";
+    if (errors.has(r+"-"+c)) return "#ff5555";
+    if (isFixed(r,c)) return "#777";
+    return "#fff";
+  };
+
+  return (
+    <MiniGameShell title="SUDOKU" onClose={onClose}>
+      <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:8}}>
+        {won ? (
+          <div style={{textAlign:"center",color:"#fff",fontFamily:"'Press Start 2P'",padding:20}}>
+            <div style={{fontSize:14}}>🏆 SOLVED!</div>
+            <div style={{fontSize:7,color:"#888",marginTop:12}}>BEEP! You are worthy of Master Ron!</div>
+          </div>
+        ) : (
+          <>
+            <div style={{display:"flex",gap:10,alignItems:"center"}}>
+              <span style={{fontSize:7,color:"#888",fontFamily:"'Press Start 2P'"}}>ERR: {errors.size}</span>
+              <button onClick={()=>setNotesMode(n=>!n)} style={{background:notesMode?"#fff":"#222",color:notesMode?"#000":"#aaa",border:"2px solid #555",padding:"2px 8px",fontSize:7,fontFamily:"'Press Start 2P'",cursor:"pointer"}}>
+                ✏️ {notesMode?"NOTE ON":"NOTE OFF"}
+              </button>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(9,28px)",gridTemplateRows:"repeat(9,28px)",gap:1,background:"#555",border:"2px solid #888"}}>
+              {board.map((row,r)=>row.map((val,c)=>{
+                const ns=noteBoard[r][c];
+                return (
+                  <div key={r+"-"+c} onClick={()=>setSelected([r,c])} style={{
+                    width:28,height:28,background:getCellBg(r,c),color:getCellColor(r,c),
+                    display:"flex",alignItems:"center",justifyContent:"center",
+                    fontSize:val===0&&ns.size>0?5:10,fontFamily:"'Press Start 2P'",cursor:"pointer",
+                    borderRight:(c+1)%3===0&&c<8?"2px solid #888":"none",
+                    borderBottom:(r+1)%3===0&&r<8?"2px solid #888":"none",
+                    userSelect:"none",boxSizing:"border-box"
+                  }}>
+                    {val!==0 ? val : ns.size>0 ? (
+                      <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",width:"100%",height:"100%",fontSize:5,lineHeight:1.3}}>
+                        {[1,2,3,4,5,6,7,8,9].map(n=>(
+                          <span key={n} style={{color:ns.has(n)?"#aaa":"transparent",textAlign:"center"}}>{n}</span>
+                        ))}
+                      </div>
+                    ) : ""}
+                  </div>
+                );
+              }))}
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(9,28px)",gap:3,marginTop:4}}>
+              {[1,2,3,4,5,6,7,8,9].map(n=>(
+                <button key={n} onClick={()=>setCell(n)} style={{height:28,background:"#222",color:"#fff",border:"2px solid #555",fontSize:9,fontFamily:"'Press Start 2P'",cursor:"pointer"}}>{n}</button>
+              ))}
+            </div>
+            <button onClick={()=>setCell(0)} style={{background:"#111",color:"#666",border:"2px solid #333",padding:"3px 16px",fontSize:7,fontFamily:"'Press Start 2P'",cursor:"pointer"}}>ERASE</button>
+          </>
+        )}
       </div>
     </MiniGameShell>
   );
@@ -861,6 +986,7 @@ function Game() {
       {activeGame === "guess" && <GameGuess onClose={() => setActiveGame(null)} />}
       {activeGame === "quiz" && <GameTrivia onClose={() => setActiveGame(null)} />}
       {activeGame === "snake" && <GameSnake onClose={() => setActiveGame(null)} />}
+      {activeGame === "sudoku" && <GameSudoku onClose={() => setActiveGame(null)} />}
 
       {/* Instructions overlay on load */}
       <Instructions />
