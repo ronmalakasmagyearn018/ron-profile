@@ -18,25 +18,19 @@
       /* Card background */
       [data-dark="true"] { background-color: #111111 !important; }
 
-      /* ── TEXT: make everything white by default ── */
-      [data-dark="true"] h1,
-      [data-dark="true"] h2,
-      [data-dark="true"] h3 { color: #ffffff !important; }
+      /* ── TEXT: make ALL text-black elements white in dark mode ── */
+      [data-dark="true"] *[class*="text-black"]:not([class*="text-black/"]):not([class*="text-black\/"]):not(button):not([class*="bg-black"] *) {
+        color: #ffffff !important;
+      }
 
-      /* paragraphs & spans that use text-black */
-      [data-dark="true"] p.text-black,
-      [data-dark="true"] p[class*="text-black"],
-      [data-dark="true"] span.text-black,
-      [data-dark="true"] span[class*="text-black"]:not([class*="text-black/"]),
-      [data-dark="true"] label.text-black { color: #ffffff !important; }
-
-      /* muted text */
+      /* muted text — keep opacity variants dimmed */
       [data-dark="true"] *[class*="text-black/"],
       [data-dark="true"] *[class*="text-black\/"] { color: rgba(255,255,255,0.4) !important; }
 
-      /* anchor text */
-      [data-dark="true"] a span.text-black,
-      [data-dark="true"] a[class*="text-black"] { color: #ffffff !important; }
+      /* headings */
+      [data-dark="true"] h1,
+      [data-dark="true"] h2,
+      [data-dark="true"] h3 { color: #ffffff !important; }
 
       /* ── BORDERS ── */
       [data-dark="true"] *[class*="border-black"] { border-color: rgba(255,255,255,0.18) !important; }
@@ -125,6 +119,27 @@
         color: #ffffff !important;
       }
       [data-dark="true"] .gallery-btn svg { fill: #ffffff !important; }
+
+      /* ── ICON BOX HOVER in dark mode ── */
+      /* Box goes white on hover, icon goes black — mirrors light mode but inverted */
+      [data-dark="true"] a.group:hover div[class*="group-hover:bg-black"] {
+        background-color: #ffffff !important;
+        border-color: rgba(255,255,255,0.3) !important;
+      }
+      [data-dark="true"] a.group:hover div[class*="group-hover:bg-black"] svg {
+        color: #000000 !important;
+        fill: #000000 !important;
+      }
+
+      /* Fix "View All" link hover in dark mode */
+      [data-dark="true"] a[class*="hover:text-black"] { color: rgba(255,255,255,0.4) !important; }
+      [data-dark="true"] a[class*="hover:text-black"]:hover { color: #ffffff !important; }
+      [data-dark="true"] a[class*="after:bg-black"]::after { background-color: #ffffff !important; }
+
+      /* Fix social links, email spans with after:bg-black underline in dark mode */
+      [data-dark="true"] span[class*="after:bg-black"]::after { background-color: #ffffff !important; }
+
+      /* Education text covered by wildcard above */
 
       /* ── FOOTER TEXT ── */
       [data-dark="true"] p.text-xs.text-black { color: rgba(255,255,255,0.4) !important; }
@@ -411,9 +426,9 @@
                 <div className="flex-1 min-w-0">
                     <h2 className="text-base font-bold text-black mb-2">About</h2>
                     <p className="text-sm text-black leading-relaxed text-justify break-words overflow-hidden">
-                        I'm an Information Technology student with experience in web development using HTML5, CSS3, JavaScript, Tailwind CSS, PHP, Python, MySQL, and basic React.js. I have developed websites and web applications through academic and team-based projects, gaining experience in user authentication, database management, and problem-solving.
+                        I'm an Information Technology student with experience in web development using HTML5, CSS3, JavaScript, Tailwind CSS, PHP, Python, MySQL, and React.js. I have developed websites and web applications through academic and team-based projects, gaining experience in user authentication, database management, and problem-solving.
 
-                        I also have a strong interest in system administration, network management, and IT infrastructure. My experience includes assembling and upgrading desktop computers, installing operating systems, diagnosing hardware issues, and performing basic network troubleshooting. I regularly use AI-assisted development tools such as Claude, Anti-Gravity, and Lovable to improve productivity and code quality. As a fast learner and team player, I am eager to gain hands-on experience, expand my technical expertise, and pursue a career in System Administration and Web Development.
+                        I also have a strong interest in system administration, network management, and IT infrastructure. My experience includes assembling and upgrading desktop computers, installing operating systems, diagnosing hardware issues, and performing basic network troubleshooting. I regularly use AI-assisted development tools such as Claude, Gemini/Anti-Gravity, and Lovable to improve productivity and code quality. As a fast learner and team player, I am eager to gain hands-on experience, expand my technical expertise, and pursue a career in System Administration or Web Development.
                     </p>
                 </div>
 
@@ -435,7 +450,7 @@
                     <div className="mb-3">
                         <p className="text-[11px] font-bold text-black uppercase tracking-wider mb-2">Backend</p>
                         <div className="flex flex-wrap gap-2">
-                            {["PHP", "Python", "MySQL", "REST API"].map(t => (
+                            {["PHP", "Python", "MySQL", "REST API", "API Integration"].map(t => (
                                 <span key={t} className="px-3 py-1 text-xs font-bold border border-black rounded-full text-black">{t}</span>
                             ))}
                         </div>
@@ -461,11 +476,11 @@
                         </div>
                     </div>
 
-                    {/* AI Tools */}
+                    {/* AI Tools & Deployment */}
                     <div className="mb-3">
-                        <p className="text-[11px] font-bold text-black uppercase tracking-wider mb-2">AI Tools</p>
+                        <p className="text-[11px] font-bold text-black uppercase tracking-wider mb-2">AI Tools & Deployment</p>
                         <div className="flex flex-wrap gap-2">
-                            {["Claude", "Anti-Gravity", "Lovable"].map(t => (
+                            {["Claude", "Gemini/Anti-Gravity", "Lovable", "Vercel", "Netlify",].map(t => (
                                 <span key={t} className="px-3 py-1 text-xs font-bold border border-black rounded-full text-black">{t}</span>
                             ))}
                         </div>
